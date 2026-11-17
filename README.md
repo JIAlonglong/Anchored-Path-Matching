@@ -9,10 +9,11 @@ Bimanual Manipulation via Anchored Path Matching**.
 
 APM distills a joint video–action teacher into one student checkpoint that
 runs at 1, 2, or 4 steps. Stage II restarts the teacher from a detached state
-reached by the student. One continuation supplies an endpoint anchor and a
-finite local-transition target. Modality-routed adapters update the video and
-action paths, while anchor-priority projection preserves the endpoint gradient
-when the local field gradient conflicts with it.
+reached by the student. A teacher continuation supplies an endpoint anchor,
+while teacher and student instantaneous direction fields are matched at that
+same state and time. Modality-routed adapters update the video and action paths,
+while anchor-priority projection preserves the endpoint gradient when the field
+gradient conflicts with it.
 
 ## Install
 

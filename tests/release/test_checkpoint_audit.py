@@ -21,7 +21,7 @@ def _record(**changes) -> CheckpointRecord:
         topology="frozen-stage1-routed-ffn-time-v1:r64/r64/t128",
         anchor_source="restart",
         field_enabled=True,
-        field_target="finite_local",
+        field_target="instantaneous",
         projection=True,
         objective="apm",
     )
@@ -50,7 +50,7 @@ def test_only_semantically_matching_apm_is_exact() -> None:
 @pytest.mark.parametrize(
     ("change", "reason"),
     [
-        ({"field_target": "instantaneous"}, "field_target expected finite_local"),
+        ({"field_target": "finite_local"}, "field_target expected instantaneous"),
         ({"projection": False}, "projection expected true"),
         ({"data_domains": ("Clean", "Random")}, "data_domains expected Clean-only"),
         ({"teacher_cfg": (1.0, 1.0)}, "teacher_cfg expected 5/1"),

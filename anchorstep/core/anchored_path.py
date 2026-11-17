@@ -1,4 +1,4 @@
-"""Stage II paired restart-anchor and finite-local path objective."""
+"""Stage II restart-anchor and instantaneous-field path objective."""
 
 from __future__ import annotations
 
@@ -83,11 +83,11 @@ def anchored_path_objective(
     config: Mapping[str, Any],
     generator: torch.Generator,
 ) -> APMObjectiveOutput:
-    """Return retained Stage I, endpoint-anchor, and finite-local losses.
+    """Return retained Stage I, endpoint-anchor, and instantaneous-field losses.
 
-    The correction prefix is always detached. One frozen teacher continuation
-    from the selected student state provides both its first local target and
-    its zero-noise restart endpoint.
+    The correction prefix is always detached. A frozen teacher continuation
+    provides the zero-noise restart endpoint, while raw teacher and student
+    directions are matched at the exact same correction state and time.
     """
     apm = _require_mapping(config, "apm")
     loss = _require_mapping(config, "loss")
@@ -95,8 +95,8 @@ def anchored_path_objective(
     steps = apm.get("rollout_steps")
     if type(steps) is not int or steps not in {1, 2, 4}:
         raise ValueError("apm.rollout_steps must be one of {1, 2, 4}")
-    if apm.get("field_target", "finite_local") != "finite_local":
-        raise ValueError("public APM requires a finite_local field target")
+    if apm.get("field_target", "instantaneous") != "instantaneous":
+        raise ValueError("public APM requires an instantaneous field target")
     teacher_steps = int(train.get("teacher_reference_steps", 8))
     if teacher_steps != 8:
         raise ValueError("public APM uses eight teacher continuation steps")
@@ -128,7 +128,6 @@ def anchored_path_objective(
         )
     if len(continuation) != teacher_steps:
         raise ValueError("teacher continuation must return eight target states")
-    local_target = continuation[0].detach()
     restart_endpoint = continuation[-1].detach()
 
     anchor_source = apm.get("anchor_source", "restart")
@@ -146,12 +145,8 @@ def anchored_path_objective(
     else:
         raise ValueError("apm.anchor_source must be 'restart' or 'original'")
 
-    local_r = interval_grid(state_t, zero, teacher_steps)[:, 1]
     predicted_endpoint = backend.student_transition(
         backend.student_module, correction_state, state_t, zero, batch
-    )
-    predicted_local = backend.student_transition(
-        backend.student_module, correction_state, state_t, local_r, batch
     )
 
     anchor_video = _mse(
@@ -165,19 +160,26 @@ def anchored_path_objective(
         float(loss["anchor_action_weight"]),
     )
     if bool(apm.get("field_enabled", True)):
+        predicted_field = backend.student_direction(
+            backend.student_module, correction_state, state_t, batch
+        )
+        with torch.no_grad():
+            teacher_field = backend.teacher_direction(
+                correction_state, state_t, batch
+            ).detach()
         field_video = _mse(
-            predicted_local.video,
-            local_target.video,
+            predicted_field.video,
+            teacher_field.video,
             float(loss["field_video_weight"]),
         )
         field_action = _mse(
-            predicted_local.action,
-            local_target.action,
+            predicted_field.action,
+            teacher_field.action,
             float(loss["field_action_weight"]),
         )
     else:
-        field_video = predicted_local.video.sum() * 0.0
-        field_action = predicted_local.action.sum() * 0.0
+        field_video = predicted_endpoint.video.sum() * 0.0
+        field_action = predicted_endpoint.action.sum() * 0.0
 
     return APMObjectiveOutput(
         base=base,
@@ -189,6 +191,6 @@ def anchored_path_objective(
             "apm/rollout_steps": torch.tensor(float(steps)),
             "apm/state_index": torch.tensor(float(state_index)),
             "apm/state_time": state_t.detach().mean(),
-            "apm/local_time": local_r.detach().mean(),
+            "apm/field_time": state_t.detach().mean(),
         },
     )

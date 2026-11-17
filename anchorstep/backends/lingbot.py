@@ -74,6 +74,8 @@ class LingBotBackend:
             "sample_prior",
             "teacher_continuation",
             "student_transition",
+            "teacher_direction",
+            "student_direction",
             "decode_prediction",
         )
         missing = [name for name in required if not hasattr(runtime, name)]
@@ -143,6 +145,20 @@ class LingBotBackend:
         batch: JointBatch,
     ) -> JointLatent:
         return self._runtime.student_transition(model, state, t, r, batch)
+
+    def teacher_direction(
+        self, state: JointLatent, time: Tensor, batch: JointBatch
+    ) -> JointLatent:
+        return self._runtime.teacher_direction(state, time, batch)
+
+    def student_direction(
+        self,
+        model: nn.Module,
+        state: JointLatent,
+        time: Tensor,
+        batch: JointBatch,
+    ) -> JointLatent:
+        return self._runtime.student_direction(model, state, time, batch)
 
     def decode_prediction(
         self, state: JointLatent, batch: JointBatch

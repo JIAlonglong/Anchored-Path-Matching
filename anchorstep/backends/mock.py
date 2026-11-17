@@ -124,6 +124,33 @@ class MockBackend:
             state.action - action_gap * action_weight,
         )
 
+    def teacher_direction(
+        self, state: JointLatent, time: Tensor, batch: JointBatch
+    ) -> JointLatent:
+        video_time = time.reshape(time.shape[0], *((1,) * (state.video.ndim - 1)))
+        action_time = time.reshape(time.shape[0], *((1,) * (state.action.ndim - 1)))
+        return JointLatent(
+            (batch.clean.video - state.video) / video_time,
+            (batch.clean.action - state.action) / action_time,
+        )
+
+    def student_direction(
+        self,
+        model: nn.Module,
+        state: JointLatent,
+        time: Tensor,
+        batch: JointBatch,
+    ) -> JointLatent:
+        del time, batch
+        if not isinstance(model, MockStudent):
+            raise TypeError("mock backend requires MockStudent")
+        video_weight = model.video_ffn.adapter_up.weight.reshape(())
+        action_weight = model.action_ffn.adapter_up.weight.reshape(())
+        return JointLatent(
+            torch.zeros_like(state.video) - video_weight,
+            torch.zeros_like(state.action) - action_weight,
+        )
+
     def decode_prediction(
         self, state: JointLatent, batch: JointBatch
     ) -> Mapping[str, Any]:

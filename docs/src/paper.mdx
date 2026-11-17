@@ -24,7 +24,7 @@ export const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   <div>
     <p class="kicker">FEWER STEPS. PAIRED SUPERVISION.</p>
     <h2>Learn from where the student actually goes.</h2>
-    <p>Coarse denoising can move a student away from its teacher’s trajectory. <strong>Anchored Path Matching (APM)</strong> restarts the teacher at a student-reached state, pairing a completed-output target with a short-transition target. One checkpoint supports <strong>1, 2, and 4 steps</strong>, with no teacher at deployment.</p>
+    <p>Coarse denoising can move a student away from its teacher’s trajectory. <strong>Anchored Path Matching (APM)</strong> restarts the teacher at a student-reached state, pairing a completed-output target with instantaneous field matching at that same state and time. One checkpoint supports <strong>1, 2, and 4 steps</strong>, with no teacher at deployment.</p>
     <p><a href="https://github.com/JIAlonglong/Anchored-Path-Matching">Code</a> · <a href="https://huggingface.co/JIAlonglong/Anchored-Path-Matching">Models</a></p>
   </div>
   <a href={`${base}/images/teaser.webp`} aria-label="Enlarge the teacher, naive sampling, and APM comparison"><img src={`${base}/images/teaser.webp`} alt="Eight-step teacher versus naive four-step generation and four-step APM in bimanual manipulation" width="1400" height="1020" fetchpriority="high" /></a>
@@ -38,14 +38,14 @@ export const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 ## Abstract
 
-World Action Models jointly generate future video and robot actions through iterative denoising. Few-step distillation reduces the number of model evaluations, but its coarse updates can move the student away from the teacher’s trajectory. We propose **Anchored Path Matching (APM)**, which supervises endpoint and short-transition predictions from states reached by the student. From each state, we continue the teacher to zero noise and use its endpoint and first intermediate state as targets. Modality-routed adapters learn to match both targets from the same starting state. When the two gradients conflict, anchor-priority updates preserve the endpoint gradient and remove the opposing component of the local gradient within each modality. One checkpoint supports 1-, 2-, and 4-step joint generation. On RoboTwin 2.0, APM improves single-step success over continued distillation by 2.0 percentage points on Clean and 1.4 points on Random. On two real-robot tasks, it improves success over the one-step teacher and reduces control-cycle latency by 21.3× relative to the eight-step teacher.
+World Action Models jointly generate future video and robot actions through iterative denoising. Few-step distillation reduces the number of model evaluations, but its coarse updates can move the student away from the teacher’s trajectory. We propose **Anchored Path Matching (APM)**, which supervises endpoint predictions and instantaneous direction fields at states reached by the student. From each state, we continue the teacher to zero noise for the restart endpoint and match the teacher and student directions at the same detached state and time. Modality-routed adapters learn both objectives from the shared starting state. When the two gradients conflict, anchor-priority updates preserve the endpoint gradient and remove the opposing component of the field gradient within each modality. One checkpoint supports 1-, 2-, and 4-step joint generation. On RoboTwin 2.0, APM improves single-step success over continued distillation by 2.0 percentage points on Clean and 1.4 points on Random. On two real-robot tasks, it improves success over the one-step teacher and reduces control-cycle latency by 21.3× relative to the eight-step teacher.
 
 <h2 id="method">One teacher continuation. Two complementary targets.</h2>
 
 APM first learns a finite-interval video–action transition map through teacher-integrated distillation. It then freezes the base and trains modality-routed adapters to correct predictions from states encountered along the student’s own trajectories.
 
 <Figure>
-  <a slot="figure" class="image-link" href={`${base}/images/method.webp`} aria-label="Enlarge the APM method diagram"><img src={`${base}/images/method.webp`} alt="APM pipeline: restart teacher from student-reached states, learn endpoint and local targets with anchor-priority gradients, and deploy at multiple sampling budgets" loading="lazy" width="2200" /></a>
+  <a slot="figure" class="image-link" href={`${base}/images/method.webp`} aria-label="Enlarge the APM method diagram"><img src={`${base}/images/method.webp`} alt="APM pipeline: restart teacher from student-reached states, learn endpoint and instantaneous-field targets with anchor-priority gradients, and deploy at multiple sampling budgets" loading="lazy" width="2200" /></a>
   <Fragment slot="caption">APM pairs endpoint and local-transition targets from the same teacher continuation. Anchor-priority correction coordinates their gradients; deployment uses only the student. Click any figure to view it at full resolution.</Fragment>
 </Figure>
 

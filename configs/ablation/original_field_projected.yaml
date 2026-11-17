@@ -3,10 +3,10 @@ ablation:
   objective: correction
   anchor_source: original
   field_enabled: true
-  field_target: finite_local
+  field_target: instantaneous
   anchor_priority_projection: true
 apm:
   anchor_source: original
   field_enabled: true
-  field_target: finite_local
+  field_target: instantaneous
   anchor_priority_projection: true

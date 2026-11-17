@@ -32,7 +32,7 @@ def _config() -> dict[str, object]:
         "apm": {
             "rollout_steps": 2,
             "anchor_source": "restart",
-            "field_target": "finite_local",
+            "field_target": "instantaneous",
             "field_enabled": True,
         },
     }

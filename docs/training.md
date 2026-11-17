@@ -24,8 +24,9 @@ python -m anchorstep.cli.train --config configs/model/lingbot_robotwin.yaml --co
 ```
 
 Stage II adds 5,000 steps. The paper config samples training budgets from
-`{1,2,4}`, uses finite local targets, and applies anchor-priority projection by
-video/action parameter group after global averaging and before clipping.
+`{1,2,4}`, matches instantaneous teacher/student fields at the correction state,
+and applies anchor-priority projection by video/action parameter group after
+global averaging and before clipping.
 
 To reproduce an ablation, replace `configs/ablation/apm.yaml` with another file
 in `configs/ablation/`. Each states anchor source, local-field presence, and

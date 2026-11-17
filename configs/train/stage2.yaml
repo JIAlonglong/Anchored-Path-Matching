@@ -17,6 +17,6 @@ apm:
   rollout_step_distribution: uniform-1-2-4
   correction_state_distribution: beta-5-2
   anchor_source: restart
-  field_target: finite_local
+  field_target: instantaneous
   field_enabled: true
   anchor_priority_projection: true

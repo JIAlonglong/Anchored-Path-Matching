@@ -5,7 +5,7 @@ The canonical model repository is
 inference tensors are eligible for publication. Online, optimizer, scheduler,
 trainer, recovery, and rank-local states are excluded.
 
-| Public ID | Paper role | Anchor | Finite local field | Projection |
+| Public ID | Paper role | Anchor | Instantaneous field | Projection |
 |---|---|---:|---:|---:|
 | `shared` | Stage I student | — | — | — |
 | `continued` | matched-budget continued Stage I | none | no | no |

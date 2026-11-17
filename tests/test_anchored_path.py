@@ -23,12 +23,20 @@ class StudentCall:
     r: Tensor
 
 
+@dataclass
+class DirectionCall:
+    state: JointLatent
+    time: Tensor
+
+
 class RecordingAPMBackend:
     def __init__(self) -> None:
         self.student_module = nn.Linear(1, 1, bias=False)
         nn.init.constant_(self.student_module.weight, 0.2)
         self.teacher_calls: list[TeacherCall] = []
         self.student_calls: list[StudentCall] = []
+        self.teacher_direction_calls: list[DirectionCall] = []
+        self.student_direction_calls: list[DirectionCall] = []
 
     def sample_prior(
         self, batch: JointBatch, generator: torch.Generator
@@ -64,6 +72,35 @@ class RecordingAPMBackend:
         gap = (t - r)[:, None]
         return JointLatent(state.video + gap * weight, state.action - gap * weight)
 
+    def teacher_direction(
+        self, state: JointLatent, time: Tensor, batch: JointBatch
+    ) -> JointLatent:
+        del batch
+        self.teacher_direction_calls.append(
+            DirectionCall(state, time.detach().clone())
+        )
+        return JointLatent(
+            torch.full_like(state.video, -1.0),
+            torch.full_like(state.action, 2.0),
+        )
+
+    def student_direction(
+        self,
+        model: nn.Module,
+        state: JointLatent,
+        time: Tensor,
+        batch: JointBatch,
+    ) -> JointLatent:
+        del batch
+        self.student_direction_calls.append(
+            DirectionCall(state, time.detach().clone())
+        )
+        weight = next(model.parameters()).reshape(())
+        return JointLatent(
+            torch.zeros_like(state.video) + weight,
+            torch.zeros_like(state.action) - weight,
+        )
+
 
 def _batch() -> JointBatch:
     return JointBatch(
@@ -87,7 +124,7 @@ def _config(steps: int) -> dict[str, object]:
         "apm": {
             "rollout_steps": steps,
             "anchor_source": "restart",
-            "field_target": "finite_local",
+            "field_target": "instantaneous",
             "field_enabled": True,
         },
     }
@@ -116,7 +153,7 @@ def test_apm_selects_documented_student_reached_state(
     assert correction[0].state.action.requires_grad is False
 
 
-def test_apm_uses_one_continuation_for_same_state_local_and_endpoint_targets() -> None:
+def test_apm_matches_instantaneous_fields_at_restart_anchor_query_state() -> None:
     backend = RecordingAPMBackend()
 
     output = anchored_path_objective(
@@ -128,11 +165,20 @@ def test_apm_uses_one_continuation_for_same_state_local_and_endpoint_targets() -
 
     correction = [call for call in backend.teacher_calls if call.times[0, -1] == 0.0]
     assert len(correction) == 1
-    endpoint_call, local_call = backend.student_calls[-2:]
-    assert endpoint_call.state.video.data_ptr() == local_call.state.video.data_ptr()
-    assert endpoint_call.state.action.data_ptr() == local_call.state.action.data_ptr()
+    endpoint_call = backend.student_calls[-1]
+    assert len(backend.teacher_direction_calls) == 1
+    assert len(backend.student_direction_calls) == 1
+    teacher_field_call = backend.teacher_direction_calls[0]
+    student_field_call = backend.student_direction_calls[0]
+    assert endpoint_call.state.video.data_ptr() == teacher_field_call.state.video.data_ptr()
+    assert endpoint_call.state.video.data_ptr() == student_field_call.state.video.data_ptr()
+    assert endpoint_call.state.action.data_ptr() == teacher_field_call.state.action.data_ptr()
+    assert endpoint_call.state.action.data_ptr() == student_field_call.state.action.data_ptr()
     assert endpoint_call.r.item() == 0.0
-    assert 0.0 < local_call.r.item() < endpoint_call.t.item()
+    assert torch.equal(teacher_field_call.time, endpoint_call.t)
+    assert torch.equal(student_field_call.time, endpoint_call.t)
+    assert teacher_field_call.state.video.requires_grad is False
+    assert teacher_field_call.state.action.requires_grad is False
     assert output.anchor_video.requires_grad
     assert output.anchor_action.requires_grad
     assert output.field_video.requires_grad

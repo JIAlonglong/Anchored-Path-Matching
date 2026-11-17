@@ -45,6 +45,22 @@ class WAMBackend(ABC):
         """Apply one student finite transition from ``t`` to ``r``."""
 
     @abstractmethod
+    def teacher_direction(
+        self, state: JointLatent, time: Tensor, batch: JointBatch
+    ) -> JointLatent:
+        """Query the frozen teacher's instantaneous direction field."""
+
+    @abstractmethod
+    def student_direction(
+        self,
+        model: nn.Module,
+        state: JointLatent,
+        time: Tensor,
+        batch: JointBatch,
+    ) -> JointLatent:
+        """Query the student's instantaneous direction at equal clocks."""
+
+    @abstractmethod
     def decode_prediction(
         self, state: JointLatent, batch: JointBatch
     ) -> Mapping[str, Any]:
