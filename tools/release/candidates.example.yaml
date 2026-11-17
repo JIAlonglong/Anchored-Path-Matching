@@ -1,0 +1,7 @@
+candidates:
+  - id: shared-stage1-step2000
+    role: shared
+    path: ${CHECKPOINT_ROOT}/shared/stage1/step_2000
+    sha256: null
+    semantic_evidence:
+      data_domains: [Clean]
