@@ -31,7 +31,7 @@ The Paper button serves the local named PDF. Replace it with an arXiv URL once a
 
 ## Content provenance
 
-All result values and figures come from the authors' manuscript. Flash-WAM's one-step RoboTwin result is attributed to DirectWAM; its other budgets are locally evaluated. The video examples are selected qualitative illustrations, as disclosed in their caption. The public overview video is in `public/videos/`, with burned-in English captions and an optional WebVTT track. It includes method animations, manuscript experiments, and the original real-robot clips. RoboTwin closed-loop footage is pending. Official institution logos and their source URLs are in `public/logos/`.
+All result values and figures come from the authors' manuscript. Flash-WAM's one-step RoboTwin result is attributed to DirectWAM; its other budgets are locally evaluated. The video examples are selected qualitative illustrations, as disclosed in their caption. The public overview video is in `public/videos/`, with English narration, burned-in captions, and an optional WebVTT track. It includes method animations, manuscript experiments, and the original real-robot clips. RoboTwin closed-loop footage is pending. Official institution logos and their source URLs are in `public/logos/`.
 
 ## Accessibility and behavior
 
