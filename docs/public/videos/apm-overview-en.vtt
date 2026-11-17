@@ -26,7 +26,7 @@ Stage II restarts the frozen teacher at a state reached by the student.
 
 7
 00:00:32.275 --> 00:00:37.083
-The first intermediate state provides the local target; the endpoint provides the anchor.
+The instantaneous direction provides the field target; the endpoint provides the anchor.
 
 8
 00:00:37.083 --> 00:00:41.892
