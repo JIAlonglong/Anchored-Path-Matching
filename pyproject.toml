@@ -17,6 +17,11 @@ dependencies = [
   "torch>=2.4",
 ]
 
+[project.scripts]
+apm-train = "anchorstep.cli.train:main"
+apm-eval = "anchorstep.cli.evaluate:main"
+apm-verify-checkpoint = "anchorstep.cli.verify_checkpoint:main"
+
 [project.optional-dependencies]
 dev = ["build>=1.2", "pytest>=8", "ruff>=0.6"]
 lingbot = []
