@@ -1,0 +1,141 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:07.000
+World Action Models jointly generate future video and robot actions.
+
+2
+00:00:07.000 --> 00:00:15.000
+Authors and affiliations. Changhao Chen is the corresponding author.
+
+3
+00:00:15.000 --> 00:00:19.000
+Few-step sampling reduces computation. but coarse updates shift the states visited by the student.
+
+4
+00:00:19.000 --> 00:00:23.000
+APM supervises predictions from states reached by the student itself.
+
+5
+00:00:23.000 --> 00:00:28.000
+Stage I constructs inputs by interpolating training samples and noise.
+
+6
+00:00:28.000 --> 00:00:33.000
+The frozen teacher integrates its velocity field to provide finite-interval target states.
+
+7
+00:00:33.000 --> 00:00:37.000
+Stage II restarts the frozen teacher at a state reached by the student.
+
+8
+00:00:37.000 --> 00:00:41.000
+The first intermediate state provides the local target; the endpoint provides the anchor.
+
+9
+00:00:41.000 --> 00:00:45.000
+Modality-routed adapters learn both targets from the same starting state.
+
+10
+00:00:45.000 --> 00:00:49.000
+When gradients conflict. the endpoint gradient has priority.
+
+11
+00:00:49.000 --> 00:00:56.000
+We train on Clean demonstrations and evaluate directly on both Clean and Random settings.
+
+12
+00:00:56.000 --> 00:01:01.000
+At one step. APM improves Clean success by 2.0 points and Random success by 1.4 points over Continued.
+
+13
+00:01:01.000 --> 00:01:06.000
+Its average success is 80.9%. The single-step Flash-WAM result is reported by DirectWAM.
+
+14
+00:01:06.000 --> 00:01:11.000
+APM improves average success over Continued at all three budgets. using one checkpoint.
+
+15
+00:01:11.000 --> 00:01:16.000
+At two steps. Flash-WAM has higher average success; APM reaches 91.4% at four steps.
+
+16
+00:01:16.000 --> 00:01:20.667
+Restart anchors improve Random success over Original anchors at one and two steps without local supervision.
+
+17
+00:01:20.667 --> 00:01:25.333
+Adding local supervision alone does not consistently improve closed-loop success.
+
+18
+00:01:25.333 --> 00:01:30.000
+With Restart and local supervision. projection improves average success over direct gradient summation.
+
+19
+00:01:30.000 --> 00:01:33.333
+Fixed-state tests separate local-transition error from endpoint error.
+
+20
+00:01:33.333 --> 00:01:36.667
+Projection lowers video endpoint error versus unprojected supervision. while increasing local error.
+
+21
+00:01:36.667 --> 00:01:40.000
+Its endpoint improvement over No Field has a 95% interval that crosses zero.
+
+22
+00:01:40.000 --> 00:01:45.000
+Compared with Continued. APM improves PSNR. SSIM. and LPIPS in single-step video prediction.
+
+23
+00:01:45.000 --> 00:01:50.000
+Against Flash-WAM. APM has higher PSNR; Flash-WAM has better SSIM and LPIPS under their deployment settings.
+
+24
+00:01:50.000 --> 00:01:55.000
+Ground truth. LingBot-VA. Flash-WAM. and APM are compared at future frames 1. 4. and 8.
+
+25
+00:01:55.000 --> 00:02:00.000
+These cases were selected post hoc from 500 contexts where all three head-camera metrics favor APM over Flash-WAM.
+
+26
+00:02:00.000 --> 00:02:04.000
+Real-robot evaluation uses matched initial states and 24 trials per method on each task.
+
+27
+00:02:04.000 --> 00:02:12.000
+Both robots approach and grasp the pen.
+
+28
+00:02:12.000 --> 00:02:20.000
+Both methods align the pen with the holder.
+
+29
+00:02:20.000 --> 00:02:28.000
+In these selected trials. the coarse teacher fails and APM completes the insertion.
+
+30
+00:02:28.000 --> 00:02:34.667
+Both methods grasp and lift the towel.
+
+31
+00:02:34.667 --> 00:02:41.333
+After release. the teacher leaves an incomplete fold; APM completes the task.
+
+32
+00:02:41.333 --> 00:02:48.000
+These are selected qualitative trials. not aggregate success rates.
+
+33
+00:02:48.000 --> 00:02:53.000
+Single-step APM improves success over the one-step teacher on both real-robot tasks.
+
+34
+00:02:53.000 --> 00:02:58.000
+Compared with the eight-step teacher. APM is 21.3 times faster. with lower PenHolder and higher FoldTowel success.
+
+35
+00:02:58.000 --> 00:03:04.000
+Paired teacher targets at student-reached states support few-step joint video–action generation.
