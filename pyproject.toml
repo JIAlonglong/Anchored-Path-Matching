@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "anchored-path-matching"
+version = "0.1.0"
+description = "Anchored Path Matching for efficient world-action-model distillation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{name = "Anchored Path Matching authors"}]
+dependencies = [
+  "numpy>=1.24",
+  "PyYAML>=6.0",
+  "safetensors>=0.4",
+  "torch>=2.4",
+]
+
+[project.optional-dependencies]
+dev = ["build>=1.2", "pytest>=8", "ruff>=0.6"]
+lingbot = []
+robotwin = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["anchorstep"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "external: requires an optional external checkout or model artifact",
+  "gpu: requires CUDA and real model assets",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
