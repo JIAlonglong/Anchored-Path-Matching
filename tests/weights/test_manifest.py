@@ -92,6 +92,9 @@ def test_staging_tree_checks_declared_files_hashes_and_private_paths(
     tmp_path: Path,
 ) -> None:
     _staging_tree(tmp_path)
+    cache = tmp_path / ".cache/huggingface/upload.json"
+    cache.parent.mkdir(parents=True)
+    cache.write_text(INTERNAL_PATH_PREFIX + "journal-is-local")
     report = validate_staging_tree(tmp_path)
     assert report.missing_exact_roles == ("apm",)
 

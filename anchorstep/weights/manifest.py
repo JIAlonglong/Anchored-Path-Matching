@@ -70,7 +70,11 @@ def validate_staging_tree(root: Path) -> ReleaseManifestReport:
 
     text_suffixes = {".json", ".md", ".py", ".txt", ".yaml", ".yml"}
     for path in directory.rglob("*"):
-        if path.is_file() and path.suffix.lower() in text_suffixes:
+        if (
+            path.is_file()
+            and ".cache" not in path.relative_to(directory).parts
+            and path.suffix.lower() in text_suffixes
+        ):
             text = path.read_text(encoding="utf-8", errors="replace")
             if INTERNAL_PATH_PREFIX in text or "<redacted-path>" in text:
                 raise ValueError(
@@ -113,7 +117,9 @@ def validate_staging_tree(root: Path) -> ReleaseManifestReport:
     actual_files = {
         path.relative_to(directory).as_posix()
         for path in directory.rglob("*")
-        if path.is_file() and path != checksums_path
+        if path.is_file()
+        and path != checksums_path
+        and ".cache" not in path.relative_to(directory).parts
     }
     if actual_files != set(expected):
         raise ValueError("checksum inventory has missing or unexpected files")
