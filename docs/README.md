@@ -37,4 +37,4 @@ All result values and figures come from the authors' manuscript. Flash-WAM's one
 
 Sampling-budget buttons expose their selected state to assistive technology. Without JavaScript, all three result tables remain visible. Image links open full-resolution figures. BibTeX copy has a manual-selection fallback. Horizontal table scrolling is contained within the table on small screens.
 
-The APM icon (`public/logos/apm.svg`, also used as the favicon) depicts paired curved paths meeting at a shared anchor. The public video includes an original synthesized instrumental bed, mixed quietly under the narration with automatic ducking. No third-party music recording or sample is used.
+The APM icon (`public/logos/apm.svg`, also used as the favicon) depicts paired curved paths meeting at a shared anchor. The public video includes an original 96 BPM electronic instrumental bed with sequenced arpeggios and pulse bass, mixed quietly under the narration with automatic ducking. No third-party music recording or sample is used.
