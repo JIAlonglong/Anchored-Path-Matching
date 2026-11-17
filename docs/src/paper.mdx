@@ -1,0 +1,79 @@
+---
+title: "Distilling World Action Models for Efficient Bimanual Manipulation via Anchored Path Matching"
+description: "Anchored Path Matching distills World Action Models into 1-, 2-, and 4-step generators using paired teacher targets at student-reached states."
+---
+
+import Figure from "./components/Figure.astro";
+import APMResults from "./components/APMResults.astro";
+import APMCitation from "./components/APMCitation.astro";
+export const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+<section class="overview not-prose" id="overview">
+  <div>
+    <p class="kicker">FEWER STEPS. PAIRED SUPERVISION.</p>
+    <h2>Learn from where the student actually goes.</h2>
+    <p>Coarse denoising can move a student away from its teacher’s trajectory. <strong>Anchored Path Matching (APM)</strong> restarts the teacher at a student-reached state, pairing a completed-output target with a short-transition target. One checkpoint supports <strong>1, 2, and 4 steps</strong>, with no teacher at deployment.</p>
+  </div>
+  <a href={`${base}/images/teaser.webp`} aria-label="Enlarge the teacher, naive sampling, and APM comparison"><img src={`${base}/images/teaser.webp`} alt="Eight-step teacher versus naive four-step generation and four-step APM in bimanual manipulation" width="1400" height="1020" fetchpriority="high" /></a>
+</section>
+
+<div class="stats not-prose">
+  <div class="stat"><strong>80.9%</strong><span>One-step RoboTwin average success</span></div>
+  <div class="stat"><strong>91.4%</strong><span>Four-step RoboTwin average success</span></div>
+  <div class="stat"><strong>21.3×</strong><span>Real-robot speedup vs. eight-step teacher</span></div>
+</div>
+
+## Abstract
+
+World Action Models jointly generate future video and robot actions through iterative denoising. Few-step distillation reduces the number of model evaluations, but its coarse updates can move the student away from the teacher’s trajectory. We propose **Anchored Path Matching (APM)**, which supervises endpoint and short-transition predictions from states reached by the student. From each state, we continue the teacher to zero noise and use its endpoint and first intermediate state as targets. Modality-routed adapters learn to match both targets from the same starting state. When the two gradients conflict, anchor-priority updates preserve the endpoint gradient and remove the opposing component of the local gradient within each modality. One checkpoint supports 1-, 2-, and 4-step joint generation. On RoboTwin 2.0, APM improves single-step success over continued distillation by 2.0 percentage points on Clean and 1.4 points on Random. On two real-robot tasks, it improves success over the one-step teacher and reduces control-cycle latency by 21.3× relative to the eight-step teacher.
+
+<h2 id="method">One teacher continuation. Two complementary targets.</h2>
+
+APM first learns a finite-interval video–action transition map through teacher-integrated distillation. It then freezes the base and trains modality-routed adapters to correct predictions from states encountered along the student’s own trajectories.
+
+<Figure>
+  <a slot="figure" class="image-link" href={`${base}/images/method.webp`} aria-label="Enlarge the APM method diagram"><img src={`${base}/images/method.webp`} alt="APM pipeline: restart teacher from student-reached states, learn endpoint and local targets with anchor-priority gradients, and deploy at multiple sampling budgets" loading="lazy" width="2200" /></a>
+  <Fragment slot="caption">APM pairs endpoint and local-transition targets from the same teacher continuation. Anchor-priority correction coordinates their gradients; deployment uses only the student. Click any figure to view it at full resolution.</Fragment>
+</Figure>
+
+<div class="steps not-prose">
+  <div><span class="step-number">01 / REACH</span><h3>Start on the student’s path</h3><p>Collect a state from the student’s generation trajectory and hold it fixed for correction.</p></div>
+  <div><span class="step-number">02 / ANCHOR</span><h3>Pair local and final targets</h3><p>Continue the frozen teacher to zero noise. Cache its first intermediate state and its endpoint.</p></div>
+  <div><span class="step-number">03 / COORDINATE</span><h3>Prioritize the endpoint</h3><p>Remove the opposing component of the local gradient when it conflicts with the endpoint gradient, within each modality.</p></div>
+</div>
+
+<h2 id="results">One checkpoint, three sampling budgets.</h2>
+
+APM is trained on **Clean data only** and evaluated directly on RoboTwin 2.0’s Clean and domain-randomized Random settings. Across 1-, 2-, and 4-step inference, it improves average success over continued base distillation. Select a matched video/action budget below.
+
+<APMResults />
+
+<h2 id="video">Better video predictions at one step.</h2>
+
+Compared with continued Stage I distillation, APM increases single-step PSNR from **30.169 to 32.317 dB**, alongside improvements in SSIM and LPIPS. The evaluation uses 500 shared contexts with ground-truth observation histories. Against Flash-WAM under each model’s deployment configuration, APM has higher PSNR; Flash-WAM has better SSIM and LPIPS.
+
+<Figure>
+  <a slot="figure" class="image-link" href={`${base}/images/video-quality.webp`} aria-label="Enlarge the video quality results"><img src={`${base}/images/video-quality.webp`} alt="Single-step gains in PSNR, SSIM, and LPIPS relative to continued distillation" loading="lazy" width="1800" /></a>
+  <Fragment slot="caption">Positive values indicate improvement over continued distillation. Video/action CFG scales are 5/1 for LingBot-VA and APM, and 1/1 for Flash-WAM.</Fragment>
+</Figure>
+
+<Figure>
+  <a slot="figure" class="image-link" href={`${base}/images/video-comparison.webp`} aria-label="Enlarge the qualitative video comparisons"><img src={`${base}/images/video-comparison.webp`} alt="Ground truth, LingBot-VA, Flash-WAM, and APM future-frame comparisons for Adjust Bottle and Pick Diverse Bottles" loading="lazy" width="2200" /></a>
+  <Fragment slot="caption">Single-step predictions for Adjust Bottle and Pick Diverse Bottles. Frames 1, 4, and 8 are shown with enlarged details from frame 4. These examples were selected post hoc from the 500 contexts based on APM’s improvements over Flash-WAM.</Fragment>
+</Figure>
+
+<h2 id="real-world">From predicted futures to physical actions.</h2>
+
+<div class="real-grid">
+  <Figure>
+    <a slot="figure" class="image-link" href={`${base}/images/real-robot.webp`} aria-label="Enlarge the Astribot S1 experiments"><img src={`${base}/images/real-robot.webp`} alt="Astribot S1 platform and physical execution stages for inserting a pen and folding a towel" loading="lazy" width="1500" /></a>
+    <Fragment slot="caption">Astribot S1 with dual 7-DoF arms. Each method is evaluated over 24 trials per task with matched initial states.</Fragment>
+  </Figure>
+  <div><h3>203.1 ms per control cycle</h3><p>Without task-specific retraining, single-step APM improves success over the coarse-grid teacher on both tasks. Compared with the full eight-step teacher, it reduces latency from 4323.6 to 203.1 ms.</p><p>The task tradeoff remains visible: APM has lower success on PenHolder and higher success on FoldTowel than the full teacher. Inference runs on an NVIDIA A800 GPU with 80 GB of memory.</p></div>
+</div>
+
+<div class="table-scroll"><table><caption class="sr-only">Real-robot task success and control-cycle latency</caption><thead><tr><th scope="col">Method (video/action steps)</th><th scope="col">PenHolder ↑</th><th scope="col">FoldTowel ↑</th><th scope="col">Latency ↓</th></tr></thead><tbody><tr><th scope="row">Teacher (8/8)</th><td>83.3%</td><td>70.8%</td><td>4323.6 ms</td></tr><tr><th scope="row">Coarse teacher (1/1)</th><td>29.2%</td><td>25.0%</td><td>187.5 ms</td></tr><tr class="ours"><th scope="row">APM (1/1)</th><td>62.5%</td><td>75.0%</td><td>203.1 ms</td></tr></tbody></table></div>
+
+<h2 id="citation">Citation</h2>
+
+<APMCitation />

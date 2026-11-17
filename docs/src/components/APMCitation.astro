@@ -1,0 +1,16 @@
+---
+const bib = `@misc{liu2026anchoredpathmatching,
+  title = {Distilling World Action Models for Efficient Bimanual Manipulation via Anchored Path Matching},
+  author = {Jialong Liu and Junjie He and Yandu Chen and Bin Zhou and Heng Su and Peijun Tang and Jianan Wang and Changhao Chen},
+  year = {2026},
+  url = {https://jialonglong.github.io/Anchored-Path-Matching/}
+}`;
+---
+<div class="citation-box"><button type="button" class="copy-button" id="copy-citation">Copy BibTeX</button><pre><code id="bibtex">{bib}</code></pre><div class="citation-status" role="status" id="citation-status"></div></div>
+<script>
+document.querySelector('#copy-citation')?.addEventListener('click',async()=>{
+ const code=document.querySelector('#bibtex');const status=document.querySelector('#citation-status');
+ if(!code||!status)return;
+ try{await navigator.clipboard.writeText(code.textContent||'');status.textContent='BibTeX copied.';}catch{const selection=window.getSelection();const range=document.createRange();range.selectNodeContents(code);selection?.removeAllRanges();selection?.addRange(range);status.textContent='Citation selected. Press Ctrl+C or ⌘C to copy.';}
+});
+</script>

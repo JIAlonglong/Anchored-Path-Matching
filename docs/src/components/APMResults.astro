@@ -1,0 +1,33 @@
+---
+const groups = [
+ {budget:1, rows:[['LingBot-VA','57.0','50.7','53.9','—'],['Flash-WAM †','82.1','74.2','78.2','—'],['Continued','82.3','76.1','79.2','—'],['APM','84.3','77.5','80.9','+1.7']]},
+ {budget:2, rows:[['LingBot-VA','88.3','86.0','87.2','—'],['Flash-WAM','90.5','88.6','89.6','—'],['Continued','89.6','87.7','88.6','—'],['APM','90.4','87.1','88.8','+0.1']]},
+ {budget:4, rows:[['LingBot-VA','90.4','90.0','90.2','—'],['Flash-WAM','92.0','90.4','91.2','—'],['Continued','90.5','89.1','89.8','—'],['APM','92.5','90.3','91.4','+1.6']]}
+];
+---
+<div id="budget-results">
+  <div class="result-tabs" role="group" aria-label="Video and action sampling budget" hidden>
+    {groups.map(({budget})=><button type="button" data-budget={budget} aria-pressed={budget===1?'true':'false'} aria-controls="results-table">{budget} {budget===1?'step':'steps'} <span aria-hidden="true">· {budget}/{budget}</span></button>)}
+  </div>
+  <div class="table-scroll"><table id="results-table"><caption class="sr-only">RoboTwin 2.0 success rates by matched video/action sampling budget</caption><thead><tr><th scope="col">Method</th><th scope="col">Clean ↑</th><th scope="col">Random ↑</th><th scope="col">Average ↑</th><th scope="col">Δ</th></tr></thead>
+    {groups.map(({budget,rows})=><tbody data-budget-panel={budget}>{rows.map(row=><tr class={row[0]==='APM'?'ours':''}><th scope="row">{row[0]}<span class="noscript-budget">({budget}/{budget})</span></th>{row.slice(1).map(value=><td>{value}</td>)}</tr>)}</tbody>)}
+  </table></div>
+  <p class="budget-summary" aria-live="polite" hidden>1-step APM: 80.9% average success · +1.7 percentage points over Continued.</p>
+  <p class="result-note">Success rates (%). Local evaluations cover 50 tasks × 50 episodes per condition. Each student variant uses one checkpoint across all budgets. Δ is the gain over Continued, computed before rounding. † Flash-WAM’s one-step result is reported by <a href="https://arxiv.org/abs/2610.28122">DirectWAM</a>; its two- and four-step results are evaluated locally. Full-budget LingBot-VA (25/50, reported): 92.9% Clean / 91.6% Random.</p>
+</div>
+<script>
+const results=document.querySelector('#budget-results');
+if(results){
+ results.classList.add('js-ready');
+ const tabs=results.querySelector<HTMLElement>('.result-tabs');const summary=results.querySelector<HTMLElement>('.budget-summary');
+ if(tabs)tabs.hidden=false;if(summary)summary.hidden=false;
+ const summaries:Record<string,string>={'1':'1-step APM: 80.9% average success · +1.7 percentage points over Continued.','2':'2-step APM: 88.8% average success · +0.1 percentage points over Continued.','4':'4-step APM: 91.4% average success · +1.6 percentage points over Continued.'};
+ function select(budget:string){
+  results?.querySelectorAll<HTMLTableSectionElement>('[data-budget-panel]').forEach(panel=>panel.hidden=panel.dataset.budgetPanel!==budget);
+  results?.querySelectorAll<HTMLButtonElement>('[data-budget]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.budget===budget)));
+  if(summary)summary.textContent=summaries[budget];
+ }
+ results.querySelectorAll<HTMLButtonElement>('[data-budget]').forEach(button=>button.addEventListener('click',()=>select(button.dataset.budget!)));
+ select('1');
+}
+</script>
