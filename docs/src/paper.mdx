@@ -51,7 +51,7 @@ APM first learns a finite-interval video–action transition map through teacher
 
 <div class="steps not-prose">
   <div><span class="step-number">01 / REACH</span><h3>Start on the student’s path</h3><p>Collect a state from the student’s generation trajectory and hold it fixed for correction.</p></div>
-  <div><span class="step-number">02 / ANCHOR</span><h3>Pair local and final targets</h3><p>Continue the frozen teacher to zero noise. Cache its first intermediate state and its endpoint.</p></div>
+  <div><span class="step-number">02 / ANCHOR</span><h3>Pair field and final targets</h3><p>Continue the frozen teacher to zero noise for the endpoint, then match its instantaneous direction at the shared state and time.</p></div>
   <div><span class="step-number">03 / COORDINATE</span><h3>Prioritize the endpoint</h3><p>Remove the opposing component of the local gradient when it conflicts with the endpoint gradient, within each modality.</p></div>
 </div>
 
