@@ -1,0 +1,152 @@
+[
+  {
+    "task": "place_can_basket",
+    "label": "Can in basket",
+    "setting": "Random",
+    "seed": "100000",
+    "policySeed": "2592",
+    "videos": [
+      {
+        "file": "place_can_basket-lingbot.mp4",
+        "poster": "place_can_basket-lingbot.jpg",
+        "outcome": "failure",
+        "frames": 176,
+        "seconds": 17.6
+      },
+      {
+        "file": "place_can_basket-continued.mp4",
+        "poster": "place_can_basket-continued.jpg",
+        "outcome": "failure",
+        "frames": 176,
+        "seconds": 17.6
+      },
+      {
+        "file": "place_can_basket-apm.mp4",
+        "poster": "place_can_basket-apm.jpg",
+        "outcome": "success",
+        "frames": 60,
+        "seconds": 6.0
+      }
+    ]
+  },
+  {
+    "task": "place_phone_stand",
+    "label": "Phone on stand",
+    "setting": "Random",
+    "seed": "100000",
+    "policySeed": "3592",
+    "videos": [
+      {
+        "file": "place_phone_stand-lingbot.mp4",
+        "poster": "place_phone_stand-lingbot.jpg",
+        "outcome": "failure",
+        "frames": 101,
+        "seconds": 10.1
+      },
+      {
+        "file": "place_phone_stand-continued.mp4",
+        "poster": "place_phone_stand-continued.jpg",
+        "outcome": "failure",
+        "frames": 101,
+        "seconds": 10.1
+      },
+      {
+        "file": "place_phone_stand-apm.mp4",
+        "poster": "place_phone_stand-apm.jpg",
+        "outcome": "success",
+        "frames": 31,
+        "seconds": 3.1
+      }
+    ]
+  },
+  {
+    "task": "place_mouse_pad",
+    "label": "Mouse on pad",
+    "setting": "Random",
+    "seed": "100000",
+    "policySeed": "3192",
+    "videos": [
+      {
+        "file": "place_mouse_pad-lingbot.mp4",
+        "poster": "place_mouse_pad-lingbot.jpg",
+        "outcome": "failure",
+        "frames": 101,
+        "seconds": 10.1
+      },
+      {
+        "file": "place_mouse_pad-continued.mp4",
+        "poster": "place_mouse_pad-continued.jpg",
+        "outcome": "failure",
+        "frames": 101,
+        "seconds": 10.1
+      },
+      {
+        "file": "place_mouse_pad-apm.mp4",
+        "poster": "place_mouse_pad-apm.jpg",
+        "outcome": "success",
+        "frames": 37,
+        "seconds": 3.7
+      }
+    ]
+  },
+  {
+    "task": "stack_bowls_two",
+    "label": "Stack two bowls",
+    "setting": "Clean",
+    "seed": "100000",
+    "policySeed": "4742",
+    "videos": [
+      {
+        "file": "stack_bowls_two-lingbot.mp4",
+        "poster": "stack_bowls_two-lingbot.jpg",
+        "outcome": "success",
+        "frames": 77,
+        "seconds": 7.7
+      },
+      {
+        "file": "stack_bowls_two-continued.mp4",
+        "poster": "stack_bowls_two-continued.jpg",
+        "outcome": "failure",
+        "frames": 226,
+        "seconds": 22.6
+      },
+      {
+        "file": "stack_bowls_two-apm.mp4",
+        "poster": "stack_bowls_two-apm.jpg",
+        "outcome": "success",
+        "frames": 75,
+        "seconds": 7.5
+      }
+    ]
+  },
+  {
+    "task": "place_shoe",
+    "label": "Place shoe",
+    "setting": "Random",
+    "seed": "100001",
+    "policySeed": "3692",
+    "videos": [
+      {
+        "file": "place_shoe-lingbot.mp4",
+        "poster": "place_shoe-lingbot.jpg",
+        "outcome": "success",
+        "frames": 37,
+        "seconds": 3.7
+      },
+      {
+        "file": "place_shoe-continued.mp4",
+        "poster": "place_shoe-continued.jpg",
+        "outcome": "failure",
+        "frames": 126,
+        "seconds": 12.6
+      },
+      {
+        "file": "place_shoe-apm.mp4",
+        "poster": "place_shoe-apm.jpg",
+        "outcome": "success",
+        "frames": 38,
+        "seconds": 3.8
+      }
+    ]
+  }
+]

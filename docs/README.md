@@ -40,3 +40,8 @@ Sampling-budget buttons expose their selected state to assistive technology. Wit
 The APM icon (`public/logos/apm.svg`, also used as the favicon) depicts paired curved paths meeting at a shared anchor. The public video includes an original 96 BPM electronic instrumental bed with sequenced arpeggios and pulse bass, mixed quietly under the narration with automatic ducking. No third-party music recording or sample is used.
 
 The public overview is approximately 4:15. Explanatory scenes and narration run at 1.15× with preserved voice pitch; the RoboTwin and real-robot clips retain their existing playback timing. The anonymous 3:01 edition is kept separately for submission.
+
+## Interactive RoboTwin gallery
+The Demos navigation link opens `#robotwin-cases`, after the aggregate RoboTwin results. Five task buttons select all 15 original RGB videos. Readers can play/pause/replay the three methods together, seek a shared recorder timeline, jump to all final outcomes, or open individual videos. Shorter episodes hold their final frame. The initial page does not autoplay; selecting a task starts that group. Mobile layouts stack the panels.
+
+Data is in `src/data/robotwin.json`, media in `public/videos/robotwin/`, and the component in `src/components/RoboTwinGallery.astro`. Video hashes match the supplied package. Labels use actual rerun outcomes, including LingBot successes for bowls and shoes. Selection bias, candidate identity, state matching and recorder timing are disclosed in the gallery.

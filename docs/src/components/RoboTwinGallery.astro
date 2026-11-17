@@ -1,0 +1,106 @@
+---
+import cases from '../data/robotwin.json';
+const base=import.meta.env.BASE_URL.replace(/\/$/,'');
+const methods=[['LingBot-VA','Official teacher · exact-case rerun'],['Continued distillation','Stage I EMA4000 candidate'],['APM','step10000 EMA · native 16/32']];
+---
+<section id="robotwin-cases" class="rw-gallery not-prose" aria-labelledby="rw-heading" data-base={`${base}/videos/robotwin/`}>
+  <p class="kicker">WATCH THE CLOSED LOOP</p>
+  <h2 id="rw-heading">Same scene. Three policies.</h2>
+  <p class="rw-intro">Explore five selected RoboTwin 2.0 episodes. All methods use one video and one action sampling step, with matched physical initial states.</p>
+  <div class="rw-select" role="group" aria-label="Choose a RoboTwin task">
+    {cases.map((c,i)=><button type="button" data-case={i} aria-pressed={i===0?'true':'false'} aria-controls="rw-panels"><span>{c.label}</span><small>{c.setting}</small></button>)}
+  </div>
+  <div class="rw-case-heading"><h3 data-case-title>Can in basket</h3><span data-case-info>Random · seed 100000 · policy seed 2592</span></div>
+  <div class="rw-panels" id="rw-panels">
+    {methods.map(([name,identity],i)=><article class:list={['rw-panel',{'rw-ours':i===2}]}>
+      <header><h4>{name}</h4><span data-result class:list={['rw-result',cases[0].videos[i].outcome]}>{cases[0].videos[i].outcome==='success'?'Success':'Failure'}</span></header>
+      <p>{identity}</p>
+      <video muted playsinline preload="auto" poster={`${base}/videos/robotwin/${cases[0].videos[i].poster}`} src={`${base}/videos/robotwin/${cases[0].videos[i].file}`} aria-label={`${name}: selected RoboTwin episode`} />
+      <div class="rw-panel-foot"><span data-state>Ready</span><a data-download href={`${base}/videos/robotwin/${cases[0].videos[i].file}`} target="_blank" rel="noopener">Open video ↗</a></div>
+    </article>)}
+  </div>
+  <div class="rw-controls" hidden>
+    <button type="button" data-play disabled>Loading…</button><button type="button" data-replay disabled>Replay</button><button type="button" data-end disabled>Show outcomes</button>
+    <label class="rw-timeline">Playback <input type="range" min="0" max="17.6" step="0.1" value="0" aria-label="Seek all three videos" disabled /></label>
+    <output data-clock>0.0 / 17.6 s</output>
+  </div>
+  <p class="rw-status" data-status role="status" aria-live="polite">Select a task, then play all three videos together.</p>
+  <p class="rw-note">Cases selected for APM success and candidate failure; aggregate results are reported above. Original 10 fps recorder playback, not physical or wall-clock time. Shorter episodes hold their final frame. Success and failure labels describe the actual videos shown.</p>
+  <details class="rw-protocol"><summary>Selection and comparison protocol</summary>
+    <p>These are all five APM-success / candidate-failure cases among 100 matched cases with complete RGB for both methods. They illustrate selected outcomes, not aggregate success rates. In the bowl and shoe cases, the LingBot-VA rerun also succeeds.</p>
+    <p>All methods: V/A = 1/1; video/action CFG = 5/1; 16 actions on the first execution, then 32; real observation feedback and head-camera RGB every 4 actions. Each group shares its task, setting, episode, seed, policy seed, fixed-case hash, and physical scene-state hash.</p>
+    <p>The Continued comparison is a Stage I EMA4000 continued-base-distillation candidate, distinct from the budget-matched Continued ablation. LingBot-VA videos are exact-case reruns; their displayed outcomes come from these reruns, not historical manifests. The older candidate's observed-image fingerprint includes renderer-dependent bytes; physical-state matching is verified using actor poses and robot joints.</p>
+  </details>
+  <noscript><p>JavaScript is needed for synchronized playback. Open each original video using its link.</p>{cases.slice(1).map(c=><p>{c.label} ({c.setting}): {c.videos.map((v,i)=><a href={`${base}/videos/robotwin/${v.file}`}>{methods[i][0]} — {v.outcome}; </a>)}</p>)}</noscript>
+</section>
+<script>
+import cases from '../data/robotwin.json';
+const root=document.querySelector<HTMLElement>('#robotwin-cases');
+if(root){
+ const videos=Array.from(root.querySelectorAll<HTMLVideoElement>('video'));
+ const play=root.querySelector<HTMLButtonElement>('[data-play]')!;
+ const replay=root.querySelector<HTMLButtonElement>('[data-replay]')!;
+ const end=root.querySelector<HTMLButtonElement>('[data-end]')!;
+ const slider=root.querySelector<HTMLInputElement>('input[type="range"]')!;
+ const clock=root.querySelector<HTMLOutputElement>('[data-clock]')!;
+ const status=root.querySelector<HTMLElement>('[data-status]')!;
+ const tabs=Array.from(root.querySelectorAll<HTMLButtonElement>('[data-case]'));
+ const states=Array.from(root.querySelectorAll<HTMLElement>('[data-state]'));
+ let selected=0,master=0,playing=false,autostart=false,generation=0,failed=false,loading=true;
+ const current=()=>cases[selected];
+ const duration=()=>Math.max(...current().videos.map(v=>v.seconds));
+ function paint(t:number){
+  slider.value=String(t);clock.textContent=`${t.toFixed(1)} / ${duration().toFixed(1)} s`;
+  states.forEach((el,i)=>{const clip=current().videos[i];el.textContent=t>=clip.seconds-.04?'Episode ended · final frame held':`${playing?'Playing':'Paused'} · frame ${Math.min(clip.frames,Math.floor(t*10)+1)}/${clip.frames}`;});
+ }
+ function pause(){playing=false;videos.forEach(v=>v.pause());play.textContent=Number(slider.value)>=duration()-.05?'Replay all':'Play all';paint(Number(slider.value));}
+ function seek(t:number){videos.forEach((v,i)=>{if(v.readyState>=1)v.currentTime=Math.min(t,Math.max(0,current().videos[i].seconds-.001));});paint(t);}
+ async function start(){
+  if(failed||videos.some(v=>v.readyState<1))return;
+  const token=generation;
+  if(Number(slider.value)>=duration()-.05)seek(0);
+  document.querySelectorAll<HTMLVideoElement>('video').forEach(v=>{if(!videos.includes(v))v.pause();});
+  playing=true;play.textContent='Pause all';status.textContent='Playing together at original recorder speed.';
+  try{await Promise.all(videos.map((v,i)=>Number(slider.value)<current().videos[i].seconds-.04?v.play():Promise.resolve()));}
+  catch{if(token===generation){pause();status.textContent='Playback was interrupted. Press Play all to retry.';}}
+ }
+ function ready(){
+  if(!loading||failed||videos.some(v=>v.readyState<3))return;
+  loading=false;status.textContent='Ready. Play all three videos, or choose another task.';
+  [play,replay,end,slider].forEach(el=>el.disabled=false);play.textContent='Play all';paint(0);
+  if(autostart){autostart=false;void start();}
+ }
+ function select(index:number,auto=false){
+  generation++;pause();selected=index;failed=false;loading=true;autostart=auto;
+  const c=current();master=c.videos.findIndex(v=>v.seconds===duration());
+  root!.querySelector<HTMLElement>('[data-case-title]')!.textContent=c.label;
+  root!.querySelector<HTMLElement>('[data-case-info]')!.textContent=`${c.setting} · seed ${c.seed} · policy seed ${c.policySeed}`;
+  tabs.forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
+  [play,replay,end,slider].forEach(el=>el.disabled=true);play.textContent='Loading…';slider.max=String(duration());slider.value='0';
+  root!.querySelectorAll<HTMLElement>('[data-result]').forEach((el,i)=>{el.textContent=c.videos[i].outcome==='success'?'Success':'Failure';el.className=`rw-result ${c.videos[i].outcome}`;});
+  videos.forEach((v,i)=>{v.poster=root!.dataset.base+c.videos[i].poster;v.src=root!.dataset.base+c.videos[i].file;v.playbackRate=1;v.load();});
+  root!.querySelectorAll<HTMLAnchorElement>('[data-download]').forEach((a,i)=>a.href=root!.dataset.base+c.videos[i].file);
+  status.textContent=`${c.label} selected. Loading three videos…`;paint(0);
+ }
+ videos.forEach((v,i)=>{
+  v.addEventListener('loadedmetadata',ready);v.addEventListener('canplay',ready);
+  v.addEventListener('error',()=>{failed=true;autostart=false;pause();status.textContent='A video could not load. Select the task again to retry, or use Open video.';});
+  v.addEventListener('timeupdate',()=>{
+   if(i!==master||!playing)return;
+   const t=v.currentTime;paint(t);
+   videos.forEach((other,j)=>{if(j!==master&&other.readyState>=2&&t<current().videos[j].seconds-.05&&Math.abs(other.currentTime-t)>.18)other.currentTime=t;});
+  });
+  v.addEventListener('ended',()=>{if(i===master){pause();paint(duration());play.textContent='Replay all';status.textContent='All episodes finished. Final frames are held for comparison.';}});
+ });
+ play.addEventListener('click',()=>playing?pause():void start());
+ replay.addEventListener('click',()=>{pause();seek(0);void start();});
+ end.addEventListener('click',()=>{pause();seek(duration());play.textContent='Replay all';status.textContent='Showing each episode’s final frame and recorded outcome.';});
+ slider.addEventListener('input',()=>{const t=Number(slider.value);pause();seek(t);status.textContent='Paused at the selected recorder time.';});
+ tabs.forEach((b,i)=>b.addEventListener('click',()=>select(i,true)));
+ root.querySelector<HTMLElement>('.rw-controls')!.hidden=false;
+ select(0);
+}
+</script>
+<style>
+.rw-gallery{margin:48px 0;padding:32px;background:#f3f7f7;border:1px solid #dfe9e8;border-radius:20px;scroll-margin-top:35px}.rw-gallery h2{font-size:clamp(26px,3vw,36px);line-height:1.15;color:#203439;margin:8px 0 14px}.rw-intro{color:#536367;font-size:16px;max-width:780px;line-height:1.6}.rw-select{display:flex;flex-wrap:wrap;gap:8px;margin:25px 0}.rw-select button{border:1px solid #cedddb;background:white;border-radius:10px;padding:10px 15px;text-align:left;cursor:pointer;color:#203439;font-weight:650}.rw-select small{display:block;font-size:11px;opacity:.75;margin-top:4px}.rw-select [aria-pressed=true]{background:#126976;color:white;border-color:#126976}.rw-case-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0}.rw-case-heading h3{font-size:22px;margin:0}.rw-case-heading>span{font-size:12px;color:#5d7377}.rw-panels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.rw-panel{background:white;border:1px solid #dae5e4;border-radius:12px;overflow:hidden;min-width:0}.rw-panel header{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:15px 12px 0;flex-wrap:wrap}.rw-panel h4{font-size:15px;margin:0;color:#203439}.rw-panel>p{font-size:11px;color:#63777c;padding:0 12px;margin:7px 0 13px}.rw-panel video{width:100%;aspect-ratio:4/3;display:block;background:#142d38;object-fit:contain}.rw-ours{border:2px solid #126976}.rw-result{font-size:10px;font-weight:750;padding:4px 7px;border-radius:20px}.rw-result.success{background:#e0f3e9;color:#166547}.rw-result.failure{background:#f8e9e4;color:#934329}.rw-panel-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:7px;padding:10px 12px;font-size:10px;color:#607074}.rw-panel-foot a{color:#126976}.rw-controls{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:18px}.rw-controls[hidden]{display:none}.rw-controls button{padding:9px 13px;background:white;border:1px solid #cadbd9;border-radius:8px;color:#203439;font-size:13px;cursor:pointer}.rw-controls [data-play]{background:#126976;color:white;border-color:#126976;min-width:98px}.rw-controls button:disabled{opacity:.5;cursor:wait}.rw-timeline{display:flex;align-items:center;gap:10px;flex:1;min-width:180px;font-size:12px;color:#5d7377}.rw-timeline input{width:100%;accent-color:#126976}.rw-controls output{font-variant-numeric:tabular-nums;font-size:12px;color:#5d7377;min-width:85px}.rw-status{font-size:12px;color:#126976;margin:13px 0 6px;min-height:1.5em}.rw-note,.rw-protocol{font-size:12px;line-height:1.65;color:#607074}.rw-protocol{border-top:1px solid #dce6e5;padding-top:12px;margin-top:18px}.rw-protocol summary{cursor:pointer;font-weight:650;color:#203439}.rw-protocol p{margin:10px 0}.rw-gallery button:focus-visible,.rw-gallery input:focus-visible{outline:3px solid #b96c33;outline-offset:3px}@media(max-width:700px){.rw-gallery{padding:20px 14px}.rw-panels{grid-template-columns:1fr}.rw-panel header{flex-wrap:nowrap}.rw-panel h4{font-size:17px}.rw-panel>p,.rw-panel-foot{font-size:12px}.rw-select{gap:6px}.rw-select button{flex:1 1 42%;font-size:13px}.rw-timeline{flex-basis:100%;order:2}.rw-controls output{margin-left:auto}.rw-controls{position:sticky;bottom:8px;background:#f3f7f7ed;padding:10px;border:1px solid #dce6e5;border-radius:10px;z-index:2}}
+</style>
