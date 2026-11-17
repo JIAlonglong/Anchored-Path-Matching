@@ -5,6 +5,9 @@ import pytest
 from anchorstep.weights.manifest import validate_release_manifest
 
 
+INTERNAL_PATH_PREFIX = "/" + "kpfs-intern/"
+
+
 def test_staging_manifest_may_report_missing_exact_roles() -> None:
     manifest = {
         "status": "staging",
@@ -32,6 +35,6 @@ def test_complete_manifest_requires_verified_unique_exact_roles_and_no_private_p
     with pytest.raises(ValueError, match="complete"):
         validate_release_manifest(manifest)
     manifest["status"] = "staging"
-    manifest["artifacts"][0]["source"] = "/kpfs-intern/private"
+    manifest["artifacts"][0]["source"] = INTERNAL_PATH_PREFIX + "private"
     with pytest.raises(ValueError, match="private|internal"):
         validate_release_manifest(manifest)

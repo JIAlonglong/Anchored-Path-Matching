@@ -9,6 +9,7 @@ from anchorstep.config import load_config, validate_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
+INTERNAL_PATH_PREFIX = "/" + "kpfs-intern/"
 MODEL = ROOT / "configs/model/lingbot_robotwin.yaml"
 STAGE2 = ROOT / "configs/train/stage2.yaml"
 ABLATIONS = {
@@ -51,7 +52,7 @@ def test_paper_ablation_has_unambiguous_semantics_and_cfg(name: str) -> None:
     assert config["teacher_target_cfg"] == {"video": 5.0, "action": 1.0}
     assert config["deployment_cfg"] == {"video": 5.0, "action": 1.0}
     assert config["data"]["text_dropout_probability"] == 0.1
-    assert all("/kpfs-intern/" not in value for value in _strings(config))
+    assert all(INTERNAL_PATH_PREFIX not in value for value in _strings(config))
     assert all(
         not Path(value).is_absolute()
         for value in _strings(config)

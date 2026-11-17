@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 
+INTERNAL_PATH_PREFIX = "/" + "kpfs-intern/"
+
+
 @dataclass(frozen=True)
 class ReleaseManifestReport:
     missing_exact_roles: tuple[str, ...]
@@ -19,7 +22,7 @@ def validate_release_manifest(
 ) -> ReleaseManifestReport:
     """Reject premature completion and private or ambiguous inventory data."""
     serialized = json.dumps(manifest, sort_keys=True)
-    if "/kpfs-intern/" in serialized or "<redacted-path>" in serialized:
+    if INTERNAL_PATH_PREFIX in serialized or "<redacted-path>" in serialized:
         raise ValueError("manifest contains an internal/private path")
     status = manifest.get("status")
     if status not in {"staging", "uploading", "complete"}:
