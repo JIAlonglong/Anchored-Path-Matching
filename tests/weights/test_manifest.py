@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
+
 import pytest
 
-from anchorstep.weights.manifest import validate_release_manifest
+from anchorstep.weights.manifest import (
+    validate_release_manifest,
+    validate_staging_tree,
+)
 
 INTERNAL_PATH_PREFIX = "/" + "kpfs-intern/"
 
@@ -52,3 +59,53 @@ def test_complete_manifest_requires_verified_exact_roles_and_safe_paths() -> Non
     manifest["artifacts"][0]["source"] = INTERNAL_PATH_PREFIX + "private"
     with pytest.raises(ValueError, match="private|internal"):
         validate_release_manifest(manifest)
+
+
+def _staging_tree(root: Path) -> None:
+    artifact = root / "bases/shared/model.safetensors"
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_bytes(b"weights")
+    manifest = {
+        "status": "uploading",
+        "required_roles": ["shared", "apm"],
+        "artifacts": [
+            {
+                "id": "shared",
+                "paper_status": "exact",
+                "verified": True,
+                "path": "bases/shared/model.safetensors",
+            }
+        ],
+        "bases": {"shared": {"artifact": "bases/shared/model.safetensors"}},
+        "variants": {},
+    }
+    (root / "manifest.json").write_text(json.dumps(manifest))
+    checksums = []
+    for path in sorted(root.rglob("*")):
+        if path.is_file() and path.name != "checksums.sha256":
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            checksums.append(f"{digest}  {path.relative_to(root)}")
+    (root / "checksums.sha256").write_text("\n".join(checksums) + "\n")
+
+
+def test_staging_tree_checks_declared_files_hashes_and_private_paths(
+    tmp_path: Path,
+) -> None:
+    _staging_tree(tmp_path)
+    report = validate_staging_tree(tmp_path)
+    assert report.missing_exact_roles == ("apm",)
+
+    artifact = tmp_path / "bases/shared/model.safetensors"
+    artifact.write_bytes(b"tampered")
+    with pytest.raises(ValueError, match="checksum"):
+        validate_staging_tree(tmp_path)
+
+    _staging_tree(tmp_path)
+    artifact.unlink()
+    with pytest.raises(ValueError, match="missing"):
+        validate_staging_tree(tmp_path)
+
+    _staging_tree(tmp_path)
+    (tmp_path / "README.md").write_text(INTERNAL_PATH_PREFIX + "private")
+    with pytest.raises(ValueError, match="private|internal"):
+        validate_staging_tree(tmp_path)
