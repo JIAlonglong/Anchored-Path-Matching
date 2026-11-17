@@ -31,10 +31,12 @@ The Paper button serves the local named PDF. Replace it with an arXiv URL once a
 
 ## Content provenance
 
-All result values and figures come from the authors' manuscript. Flash-WAM's one-step RoboTwin result is attributed to DirectWAM; its other budgets are locally evaluated. The video examples are selected qualitative illustrations, as disclosed in their caption. The public overview video is in `public/videos/`, with English male narration (Qwen3-TTS / Aiden), burned-in captions, and an optional WebVTT track. It includes method animations, manuscript experiments, and the original real-robot clips. RoboTwin closed-loop footage is pending. Official institution logos and their source URLs are in `public/logos/`.
+All result values and figures come from the authors' manuscript. Flash-WAM's one-step RoboTwin result is attributed to DirectWAM; its other budgets are locally evaluated. The video examples are selected qualitative illustrations, as disclosed in their caption. The public overview video is in `public/videos/`, with English male narration (Qwen3-TTS / Aiden), burned-in captions, and an optional WebVTT track. It includes method animations, manuscript experiments, and the original real-robot clips. The video includes the selected place_can_basket Random closed-loop case, with matched physical initial states, V/A=1/1 and CFG=5/1. Continued is explicitly identified as the Stage I EMA4000 candidate, distinct from the budget-matched ablation; LingBot-VA uses an exact-case rerun. Source playback is preserved, with labeled final-frame holds. This is one of five APM-success/candidate-failure cases selected from 100 matched RGB cases. Official institution logos and their source URLs are in `public/logos/`.
 
 ## Accessibility and behavior
 
 Sampling-budget buttons expose their selected state to assistive technology. Without JavaScript, all three result tables remain visible. Image links open full-resolution figures. BibTeX copy has a manual-selection fallback. Horizontal table scrolling is contained within the table on small screens.
 
 The APM icon (`public/logos/apm.svg`, also used as the favicon) depicts paired curved paths meeting at a shared anchor. The public video includes an original 96 BPM electronic instrumental bed with sequenced arpeggios and pulse bass, mixed quietly under the narration with automatic ducking. No third-party music recording or sample is used.
+
+The public overview is approximately 4:15. Explanatory scenes and narration run at 1.15× with preserved voice pitch; the RoboTwin and real-robot clips retain their existing playback timing. The anonymous 3:01 edition is kept separately for submission.

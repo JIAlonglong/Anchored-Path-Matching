@@ -1,137 +1,145 @@
 WEBVTT
 
 1
-00:00:00.000 --> 00:00:07.000
+00:00:00.000 --> 00:00:06.100
 World Action Models jointly generate future video and robot actions.
 
 2
-00:00:07.000 --> 00:00:13.500
+00:00:06.100 --> 00:00:11.750
 Few-step sampling reduces computation, but coarse updates shift the states visited by the student.
 
 3
-00:00:13.500 --> 00:00:20.000
+00:00:11.750 --> 00:00:17.400
 APM supervises predictions from states reached by the student itself.
 
 4
-00:00:20.000 --> 00:00:25.783
+00:00:17.400 --> 00:00:22.433
 Stage I constructs inputs by interpolating training samples and noise.
 
 5
-00:00:25.783 --> 00:00:31.567
+00:00:22.433 --> 00:00:27.467
 The frozen teacher integrates its velocity field to provide finite-interval target states.
 
 6
-00:00:31.567 --> 00:00:37.100
+00:00:27.467 --> 00:00:32.275
 Stage II restarts the frozen teacher at a state reached by the student.
 
 7
-00:00:37.100 --> 00:00:42.633
+00:00:32.275 --> 00:00:37.083
 The first intermediate state provides the local target; the endpoint provides the anchor.
 
 8
-00:00:42.633 --> 00:00:48.167
+00:00:37.083 --> 00:00:41.892
 Modality-routed adapters learn both targets from the same starting state.
 
 9
-00:00:48.167 --> 00:00:53.700
+00:00:41.892 --> 00:00:46.700
 When gradients conflict, the endpoint gradient has priority.
 
 10
-00:00:53.700 --> 00:01:00.700
+00:00:46.700 --> 00:00:52.800
 We train on Clean demonstrations and evaluate directly on both Clean and Random settings.
 
 11
-00:01:00.700 --> 00:01:09.917
+00:00:52.800 --> 00:01:00.817
 At one step, APM improves Clean success by 2.0 points and Random success by 1.4 points over Continued.
 
 12
-00:01:09.917 --> 00:01:19.133
+00:01:00.817 --> 00:01:08.833
 Its average success is 80.9%. The single-step Flash-WAM result is reported by DirectWAM.
 
 13
-00:01:19.133 --> 00:01:27.633
+00:01:08.833 --> 00:01:16.217
 APM improves average success over Continued at all three budgets, using one checkpoint.
 
 14
-00:01:27.633 --> 00:01:36.133
+00:01:16.217 --> 00:01:23.600
 At two steps, Flash-WAM has higher average success; APM reaches 91.4% at four steps.
 
 15
-00:01:36.133 --> 00:01:44.067
-Restart anchors improve Random success over Original anchors at one and two steps without local supervision.
+00:01:23.600 --> 00:01:34.600
+All three methods start from the same physical scene and use one video and one action sampling step.
 
 16
-00:01:44.067 --> 00:01:52.000
-Adding local supervision alone does not consistently improve closed-loop success.
+00:01:34.600 --> 00:01:45.600
+APM succeeds in this selected case. The Stage I EMA4000 candidate and the rerun LingBot-VA fail.
 
 17
-00:01:52.000 --> 00:01:59.933
-With Restart and local supervision, projection improves average success over direct gradient summation.
+00:01:45.600 --> 00:01:52.500
+Restart anchors improve Random success over Original anchors at one and two steps without local supervision.
 
 18
-00:01:59.933 --> 00:02:07.311
-Fixed-state tests separate local-transition error from endpoint error.
+00:01:52.500 --> 00:01:59.400
+Adding local supervision alone does not consistently improve closed-loop success.
 
 19
-00:02:07.311 --> 00:02:14.689
-Projection lowers video endpoint error versus unprojected supervision, while increasing local error.
+00:01:59.400 --> 00:02:06.300
+With Restart and local supervision, projection improves average success over direct gradient summation.
 
 20
-00:02:14.689 --> 00:02:22.067
-Its endpoint improvement over No Field has a 95% interval that crosses zero.
+00:02:06.300 --> 00:02:12.711
+Fixed-state tests separate local-transition error from endpoint error.
 
 21
-00:02:22.067 --> 00:02:34.967
-Compared with Continued, APM improves PSNR, SSIM, and LPIPS in single-step video prediction.
+00:02:12.711 --> 00:02:19.122
+Projection lowers video endpoint error versus unprojected supervision, while increasing local error.
 
 22
-00:02:34.967 --> 00:02:47.867
-Against Flash-WAM, APM has higher PSNR; Flash-WAM has better SSIM and LPIPS under their deployment settings.
+00:02:19.122 --> 00:02:25.533
+Its endpoint improvement over No Field has a 95% interval that crosses zero.
 
 23
-00:02:47.867 --> 00:02:57.000
-Ground truth, LingBot-VA, Flash-WAM, and APM are compared at future frames 1, 4, and 8.
+00:02:25.533 --> 00:02:36.750
+Compared with Continued, APM improves PSNR, SSIM, and LPIPS in single-step video prediction.
 
 24
-00:02:57.000 --> 00:03:06.133
-These cases were selected post hoc from 500 contexts where all three head-camera metrics favor APM over Flash-WAM.
+00:02:36.750 --> 00:02:47.967
+Against Flash-WAM, APM has higher PSNR; Flash-WAM has better SSIM and LPIPS under their deployment settings.
 
 25
-00:03:06.133 --> 00:03:12.867
-Real-robot evaluation uses matched initial states and 24 trials per method on each task.
+00:02:47.967 --> 00:02:55.917
+Ground truth, LingBot-VA, Flash-WAM, and APM are compared at future frames 1, 4, and 8.
 
 26
-00:03:12.867 --> 00:03:20.867
-Both robots approach and grasp the pen.
+00:02:55.917 --> 00:03:03.867
+These cases were selected post hoc from 500 contexts where all three head-camera metrics favor APM over Flash-WAM.
 
 27
-00:03:20.867 --> 00:03:28.867
-Both methods align the pen with the holder.
+00:03:03.867 --> 00:03:09.733
+Real-robot evaluation uses matched initial states and 24 trials per method on each task.
 
 28
-00:03:28.867 --> 00:03:36.867
-In these selected trials, the coarse teacher fails and APM completes the insertion.
+00:03:09.733 --> 00:03:17.733
+Both robots approach and grasp the pen.
 
 29
-00:03:36.867 --> 00:03:43.533
-Both methods grasp and lift the towel.
+00:03:17.733 --> 00:03:25.733
+Both methods align the pen with the holder.
 
 30
-00:03:43.533 --> 00:03:50.200
-After release, the teacher leaves an incomplete fold; APM completes the task.
+00:03:25.733 --> 00:03:33.733
+In these selected trials, the coarse teacher fails and APM completes the insertion.
 
 31
-00:03:50.200 --> 00:03:56.867
-These are selected qualitative trials, not aggregate success rates.
+00:03:33.733 --> 00:03:40.400
+Both methods grasp and lift the towel.
 
 32
-00:03:56.867 --> 00:04:06.250
-Single-step APM improves success over the one-step teacher on both real-robot tasks.
+00:03:40.400 --> 00:03:47.067
+After release, the teacher leaves an incomplete fold; APM completes the task.
 
 33
-00:04:06.250 --> 00:04:15.633
-Compared with the eight-step teacher, APM is 21.3 times faster, with lower PenHolder and higher FoldTowel success.
+00:03:47.067 --> 00:03:53.733
+These are selected qualitative trials, not aggregate success rates.
 
 34
-00:04:15.633 --> 00:04:21.833
+00:03:53.733 --> 00:04:01.900
+Single-step APM improves success over the one-step teacher on both real-robot tasks.
+
+35
+00:04:01.900 --> 00:04:10.067
+Compared with the eight-step teacher, APM is 21.3 times faster, with lower PenHolder and higher FoldTowel success.
+
+36
+00:04:10.067 --> 00:04:15.467
 Paired teacher targets at student-reached states support few-step joint video–action generation.
