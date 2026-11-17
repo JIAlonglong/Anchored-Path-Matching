@@ -24,17 +24,20 @@ const title = frontmatter.title;
   <meta property="og:type" content="website" />
   <meta property="og:image" content={new URL(`${base}/images/teaser.webp`,Astro.site).href} />
   <link rel="canonical" href={Astro.url} />
-  <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+  <link rel="icon" href={`${base}/logos/apm.svg?v=1`} type="image/svg+xml" />
   <title>APM — Anchored Path Matching</title>
 </head>
 <body>
   <a class="skip-link" href="#overview">Skip to content</a>
   <nav class="site-nav" aria-label="Main navigation">
-    <a class="brand" href="#top"><img src={`${base}/favicon.svg`} width="27" height="27" alt="" />APM</a>
+    <a class="brand" href="#top"><img src={`${base}/logos/apm.svg`} width="30" height="30" alt="" />APM</a>
     <div><a href="#video-overview">Video</a><a href="#method">Method</a><a href="#results">Results</a><a href="#real-world">Real world</a><a href="#citation">Cite</a></div>
   </nav>
   <header id="top" class="hero">
-    <p class="eyebrow">ANCHORED PATH MATCHING</p>
+    <div class="project-identity">
+      <img src={`${base}/logos/apm.svg`} width="76" height="76" alt="APM: two paths meeting at an anchor" />
+      <div><p class="project-acronym">APM</p><p class="eyebrow">ANCHORED PATH MATCHING</p></div>
+    </div>
     <h1>Distilling World Action Models<br class="desktop-break" /> for Efficient Bimanual Manipulation<br class="desktop-break" /> <span>via Anchored Path Matching</span></h1>
     <div class="authors">
       {authors.map(([name,notes])=><span>{name}<sup>{notes}{name==='Changhao Chen' && <a href="mailto:changhaochen@hkust-gz.edu.cn" aria-label="Email corresponding author Changhao Chen"><Icon name="ri:mail-line" /></a>}</sup></span>)}
@@ -61,6 +64,6 @@ const title = frontmatter.title;
   <main class="prose prose-lg max-w-none prose-headings:tracking-tight prose-a:text-teal-700 prose-a:no-underline prose-a:hover:underline prose-strong:font-semibold">
     <Content components={{table: Table}} />
   </main>
-  <footer class="site-footer"><a class="brand" href="#top">APM <span>Anchored Path Matching</span></a><p>Website adapted from <a href="https://github.com/JIAlonglong/REAL_wb">REAL_wb</a> and <a href="https://research-template.roman.technology">Roman Hauksson-Neill’s academic project template</a>.<br/>Template licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p></footer>
+  <footer class="site-footer"><a class="brand" href="#top"><img src={`${base}/logos/apm.svg`} width="30" height="30" alt="" />APM <span>Anchored Path Matching</span></a><p>Website adapted from <a href="https://github.com/JIAlonglong/REAL_wb">REAL_wb</a> and <a href="https://research-template.roman.technology">Roman Hauksson-Neill’s academic project template</a>.<br/>Template licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p></footer>
 </body>
 </html>
