@@ -1,0 +1,10 @@
+ablation:
+  public_id: original-no-field
+  objective: correction
+  anchor_source: original
+  field_enabled: false
+  anchor_priority_projection: false
+apm:
+  anchor_source: original
+  field_enabled: false
+  anchor_priority_projection: false

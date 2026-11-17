@@ -1,0 +1,10 @@
+ablation:
+  public_id: continued
+  objective: continued-stage1
+  anchor_source: none
+  field_enabled: false
+  anchor_priority_projection: false
+apm:
+  anchor_source: restart
+  field_enabled: false
+  anchor_priority_projection: false

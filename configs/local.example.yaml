@@ -1,0 +1,12 @@
+paths:
+  lingbot_repo: ${LINGBOT_REPO}
+  teacher_checkpoint: ${LINGBOT_TEACHER_CHECKPOINT}
+  robotwin_repo: ${ROBOTWIN_REPO}
+  robotwin_data: ${ROBOTWIN_DATA}
+  output_dir: ${APM_OUTPUT_DIR}
+backend:
+  runtime_factory: ${LINGBOT_RUNTIME_FACTORY}
+train:
+  runner_factory: ${APM_TRAIN_RUNNER_FACTORY}
+evaluation:
+  runner_factory: ${APM_EVAL_RUNNER_FACTORY}

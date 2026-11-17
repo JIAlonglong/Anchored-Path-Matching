@@ -1,0 +1,10 @@
+ablation:
+  public_id: restart-no-field
+  objective: correction
+  anchor_source: restart
+  field_enabled: false
+  anchor_priority_projection: false
+apm:
+  anchor_source: restart
+  field_enabled: false
+  anchor_priority_projection: false

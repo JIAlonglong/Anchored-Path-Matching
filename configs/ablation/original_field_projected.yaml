@@ -1,0 +1,12 @@
+ablation:
+  public_id: original-field-projected
+  objective: correction
+  anchor_source: original
+  field_enabled: true
+  field_target: finite_local
+  anchor_priority_projection: true
+apm:
+  anchor_source: original
+  field_enabled: true
+  field_target: finite_local
+  anchor_priority_projection: true

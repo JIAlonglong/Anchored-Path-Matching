@@ -1,0 +1,7 @@
+evaluation:
+  benchmark: robotwin
+  domains: [Clean, Random]
+  resume: true
+  require_explicit_cfg: true
+deployment:
+  budgets: [1, 2, 4]

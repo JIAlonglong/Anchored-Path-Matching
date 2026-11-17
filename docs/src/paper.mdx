@@ -25,6 +25,7 @@ export const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <p class="kicker">FEWER STEPS. PAIRED SUPERVISION.</p>
     <h2>Learn from where the student actually goes.</h2>
     <p>Coarse denoising can move a student away from its teacher’s trajectory. <strong>Anchored Path Matching (APM)</strong> restarts the teacher at a student-reached state, pairing a completed-output target with a short-transition target. One checkpoint supports <strong>1, 2, and 4 steps</strong>, with no teacher at deployment.</p>
+    <p><a href="https://github.com/JIAlonglong/Anchored-Path-Matching">Code</a> · <a href="https://huggingface.co/JIAlonglong/Anchored-Path-Matching">Models</a></p>
   </div>
   <a href={`${base}/images/teaser.webp`} aria-label="Enlarge the teacher, naive sampling, and APM comparison"><img src={`${base}/images/teaser.webp`} alt="Eight-step teacher versus naive four-step generation and four-step APM in bimanual manipulation" width="1400" height="1020" fetchpriority="high" /></a>
 </section>

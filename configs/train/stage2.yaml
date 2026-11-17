@@ -1,0 +1,22 @@
+train:
+  stage: 2
+  steps: 5000
+  batch_size: 32
+  teacher_reference_steps: 8
+  ema_decay: 0.999
+  gradient_clip_norm: 1.0
+loss:
+  video_weight: 1.0
+  action_weight: 0.1
+  anchor_video_weight: 1.0
+  anchor_action_weight: 0.1
+  field_video_weight: 1.0
+  field_action_weight: 0.1
+apm:
+  rollout_steps: 4
+  rollout_step_distribution: uniform-1-2-4
+  correction_state_distribution: beta-5-2
+  anchor_source: restart
+  field_target: finite_local
+  field_enabled: true
+  anchor_priority_projection: true

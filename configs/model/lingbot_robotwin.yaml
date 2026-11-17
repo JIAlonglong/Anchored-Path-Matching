@@ -1,0 +1,31 @@
+compatibility:
+  lingbot_code_revision: 58c2ae5bac46bd8114065bea9d7d256eb67c16c3
+  lingbot_model_revision: 8c9dea8abbc5c91cc9e18bc3264b8915083bbe70
+  robotwin_revision: 30954692d06ba7e89f7a6b76064f4062c488fa81
+backend:
+  name: lingbot
+  ffn_video_rank: 64
+  ffn_action_rank: 64
+  temporal_rank: 128
+  frame_chunk_size: 2
+  attention_window: 72
+  model_action_dimension: 30
+robotwin:
+  contract: lingbot-robotwin-tshape-legacy-v1
+data:
+  text_dropout_probability: 0.1
+  observation_camera_keys:
+    - observation.images.cam_high
+    - observation.images.cam_left_wrist
+    - observation.images.cam_right_wrist
+  used_action_channel_ids: [0, 1, 2, 3, 4, 5, 6, 28, 7, 8, 9, 10, 11, 12, 13, 29]
+teacher_target_cfg:
+  video: 5.0
+  action: 1.0
+deployment_cfg:
+  video: 5.0
+  action: 1.0
+guidance:
+  target_guidance_mode: inference_composed
+deployment:
+  budgets: [1, 2, 4]

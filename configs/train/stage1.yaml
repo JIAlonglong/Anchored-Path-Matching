@@ -1,0 +1,10 @@
+train:
+  stage: 1
+  steps: 4000
+  batch_size: 32
+  teacher_reference_steps: 8
+  ema_decay: 0.999
+  gradient_clip_norm: 1.0
+loss:
+  video_weight: 1.0
+  action_weight: 0.1
