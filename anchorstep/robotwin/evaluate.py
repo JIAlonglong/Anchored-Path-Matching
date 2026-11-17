@@ -6,7 +6,11 @@ import importlib
 from collections.abc import Callable, Iterable, Mapping
 from typing import Any
 
-from anchorstep.robotwin.results import EpisodeRecord, EvaluationSummary, aggregate_results
+from anchorstep.robotwin.results import (
+    EpisodeRecord,
+    EvaluationSummary,
+    aggregate_results,
+)
 
 
 def load_episode_runner(factory_path: str) -> Callable[..., Iterable[EpisodeRecord]]:
@@ -17,7 +21,9 @@ def load_episode_runner(factory_path: str) -> Callable[..., Iterable[EpisodeReco
     try:
         factory = getattr(importlib.import_module(module_name), function_name)
     except (ImportError, AttributeError) as error:
-        raise RuntimeError(f"cannot import RoboTwin runner factory {factory_path}") from error
+        raise RuntimeError(
+            f"cannot import RoboTwin runner factory {factory_path}"
+        ) from error
     return factory
 
 

@@ -86,7 +86,11 @@ def test_stage2_projects_after_global_average_and_updates_only_adapters() -> Non
     backend = TinyBackend()
     reducer = RecordingReducer()
     optimizer = torch.optim.SGD(
-        [parameter for parameter in backend.student_module.parameters() if parameter.requires_grad],
+        [
+            parameter
+            for parameter in backend.student_module.parameters()
+            if parameter.requires_grad
+        ],
         lr=0.1,
     )
     trainer = Trainer(
@@ -101,8 +105,12 @@ def test_stage2_projects_after_global_average_and_updates_only_adapters() -> Non
     metrics = trainer.train_accumulated_step([{"sample": 1}, {"sample": 2}])
 
     assert reducer.components == ["base", "anchor", "field"]
-    assert backend.student_module.video_ffn.adapter_up.weight.item() == pytest.approx(0.8)
-    assert backend.student_module.action_ffn.adapter_up.weight.item() == pytest.approx(0.6)
+    assert backend.student_module.video_ffn.adapter_up.weight.item() == pytest.approx(
+        0.8
+    )
+    assert backend.student_module.action_ffn.adapter_up.weight.item() == pytest.approx(
+        0.6
+    )
     assert backend.student_module.shared_weight.item() == 7.0
     assert metrics["gradient/video/base_norm"] == pytest.approx(1.0)
     assert metrics["gradient/video/anchor_norm"] == pytest.approx(1.0)

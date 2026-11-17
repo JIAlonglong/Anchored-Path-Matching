@@ -15,13 +15,10 @@ from anchorstep.core.anchored_path import APMObjectiveOutput, anchored_path_obje
 from anchorstep.training.distributed import average_gradients
 from anchorstep.training.ema import update_ema
 
-
 GradientReducer = Callable[
     [str, Sequence[str], Sequence[Tensor | None]], list[Tensor | None]
 ]
-Objective = Callable[
-    [Any, Any, Mapping[str, Any], torch.Generator], APMObjectiveOutput
-]
+Objective = Callable[[Any, Any, Mapping[str, Any], torch.Generator], APMObjectiveOutput]
 
 
 def _add_gradients(*gradients: Tensor | None) -> Tensor | None:
@@ -97,9 +94,7 @@ class Trainer:
 
         for raw_batch in raw_batches:
             batch = self.backend.encode_batch(raw_batch)
-            output = self.objective(
-                self.backend, batch, self.config, self.generator
-            )
+            output = self.objective(self.backend, batch, self.config, self.generator)
             losses = {
                 "base": output.base,
                 "anchor": output.anchor_video + output.anchor_action,

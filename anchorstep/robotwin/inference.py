@@ -18,9 +18,7 @@ def rollout_student(
     steps: Literal[1, 2, 4],
 ) -> JointLatent:
     """Run exactly the selected deployment budget without a teacher query."""
-    grid = build_time_grid(steps).to(
-        device=state.video.device, dtype=state.video.dtype
-    )
+    grid = build_time_grid(steps).to(device=state.video.device, dtype=state.video.dtype)
     batch_size = state.video.shape[0]
     current = state
     with torch.no_grad():

@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
 
 from safetensors import safe_open
 from safetensors.torch import save_file
@@ -71,9 +70,7 @@ def materialize(
     for index, keys in enumerate(partitions, start=1):
         shard_name = f"model-{index:05d}-of-{total:05d}.safetensors"
         tensors = {
-            key: _tensor(
-                artifact_path if key in artifact_entries else Path(base), key
-            )
+            key: _tensor(artifact_path if key in artifact_entries else Path(base), key)
             for key in keys
         }
         save_file(tensors, output / shard_name)
@@ -83,7 +80,9 @@ def materialize(
         json.dumps(
             {
                 "metadata": {
-                    "total_size": sum(entry.length for entry in logical_entries.values())
+                    "total_size": sum(
+                        entry.length for entry in logical_entries.values()
+                    )
                 },
                 "weight_map": weight_map,
             },
@@ -96,6 +95,7 @@ def materialize(
     digest = tensor_state_digest(index_path)
     if digest != manifest["source_digest"]:
         raise ValueError(
-            f"materialized logical digest mismatch: {digest} != {manifest['source_digest']}"
+            "materialized logical digest mismatch: "
+            f"{digest} != {manifest['source_digest']}"
         )
     return index_path

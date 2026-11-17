@@ -67,7 +67,11 @@ def _extract_semantics(
     config: dict[str, Any],
 ) -> CheckpointSemantics:
     train = config.get("train", {}) if isinstance(config.get("train", {}), dict) else {}
-    loss_weights = train.get("loss_weights", {}) if isinstance(train.get("loss_weights", {}), dict) else {}
+    loss_weights = (
+        train.get("loss_weights", {})
+        if isinstance(train.get("loss_weights", {}), dict)
+        else {}
+    )
     guidance = protocol.get("guidance")
     if not isinstance(guidance, dict):
         guidance = contract.get("guidance_contract", {})
@@ -126,7 +130,9 @@ def _extract_semantics(
         topology=_topology(config, contract),
         anchor_source=anchor_source,
         field_enabled=field_enabled,
-        field_target=(str(train["apm_field_target"]) if "apm_field_target" in train else None),
+        field_target=(
+            str(train["apm_field_target"]) if "apm_field_target" in train else None
+        ),
         projection=projection,
         objective=("continued" if metadata.get("stage") == 1 else "apm"),
     )
@@ -139,7 +145,11 @@ def _apply_evidence(
     for key, raw_value in evidence.items():
         if not hasattr(semantics, key):
             raise ValueError(f"unknown semantic evidence field: {key}")
-        value = tuple(raw_value) if key in {"data_domains", "teacher_cfg", "deployment_cfg"} else raw_value
+        value = (
+            tuple(raw_value)
+            if key in {"data_domains", "teacher_cfg", "deployment_cfg"}
+            else raw_value
+        )
         current = getattr(semantics, key)
         if current is not None and current != value:
             raise ValueError(
@@ -184,7 +194,10 @@ def discover_candidate(spec: CandidateSpec) -> CheckpointRecord:
         config = loaded
         sidecars["config.yaml"] = config_path
     inference = directory / "inference_export.json"
-    contracts: dict[str, Any] = {"budget_protocol": protocol, "robotwin_contract": contract}
+    contracts: dict[str, Any] = {
+        "budget_protocol": protocol,
+        "robotwin_contract": contract,
+    }
     if inference.is_file():
         contracts["inference_export"] = _json(inference)
         sidecars["inference_export.json"] = inference

@@ -4,7 +4,6 @@ import shlex
 import subprocess
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 DOCUMENTS = (
     ROOT / "README.md",
@@ -41,5 +40,7 @@ def test_documented_preflight_commands_execute_without_external_assets() -> None
             capture_output=True,
         )
         assert completed.returncode == 0, (
-            f"command failed: {command}\nstdout:\n{completed.stdout}\nstderr:\n{completed.stderr}"
+            f"command failed: {command}\n"
+            f"stdout:\n{completed.stdout}\n"
+            f"stderr:\n{completed.stderr}"
         )

@@ -12,7 +12,7 @@ from torch import Tensor
 from anchorstep.backends.base import WAMBackend
 from anchorstep.core.flow_map import stage1_objective
 from anchorstep.core.schedules import build_time_grid, interval_grid
-from anchorstep.interfaces import JointBatch, JointLatent
+from anchorstep.interfaces import JointBatch
 
 
 @dataclass(frozen=True)
@@ -104,9 +104,7 @@ def anchored_path_objective(
     state_index = _correction_index(steps, generator, batch.clean.video.device)
     base = stage1_objective(backend, batch, config, generator).total
     prior = backend.sample_prior(batch, generator).detach()
-    grid = build_time_grid(steps).to(
-        device=prior.video.device, dtype=prior.video.dtype
-    )
+    grid = build_time_grid(steps).to(device=prior.video.device, dtype=prior.video.dtype)
     batch_size = prior.video.shape[0]
     correction_state = prior
     for index in range(state_index):

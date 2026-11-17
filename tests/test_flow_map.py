@@ -85,9 +85,7 @@ def test_stage1_uses_same_state_and_detached_eight_step_teacher_target() -> None
     assert backend.teacher_times is not None
     assert backend.teacher_times.shape == (2, 9)
     assert backend.teacher_target_requires_grad == (False, False)
-    assert torch.equal(
-        output.terms["video_weighted"], 2.0 * output.terms["video_mse"]
-    )
+    assert torch.equal(output.terms["video_weighted"], 2.0 * output.terms["video_mse"])
     assert torch.equal(
         output.terms["action_weighted"], 0.25 * output.terms["action_mse"]
     )

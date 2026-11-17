@@ -42,7 +42,9 @@ def test_train_and_eval_check_only_do_not_import_simulator_or_allocate_cuda(
     assert train_main(["--config", str(config), "--check-only"]) == 0
     assert evaluate_main(["--config", str(config), "--check-only"]) == 0
     assert "sapien" not in sys.modules
-    assert not any(name == "robotwin" or name.startswith("robotwin.") for name in sys.modules)
+    assert not any(
+        name == "robotwin" or name.startswith("robotwin.") for name in sys.modules
+    )
 
 
 def test_checkpoint_check_only_validates_contract_without_model_allocation(

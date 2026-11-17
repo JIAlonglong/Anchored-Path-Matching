@@ -37,18 +37,19 @@ def test_install_routes_paper_ranks_and_freezes_shared_attention() -> None:
         assert block.video_ffn.rank == 64
         assert block.action_ffn.rank == 64
         assert block.temporal_projection.rank == 128
-        assert all(not parameter.requires_grad for parameter in block.shared_attention.parameters())
-    assert topology.video_parameter_names.isdisjoint(
-        topology.action_parameter_names
-    )
+        assert all(
+            not parameter.requires_grad
+            for parameter in block.shared_attention.parameters()
+        )
+    assert topology.video_parameter_names.isdisjoint(topology.action_parameter_names)
     assert topology.video_parameter_names
     assert topology.action_parameter_names
-    assert {
-        parameter_modality(name) for name in topology.video_parameter_names
-    } == {"video"}
-    assert {
-        parameter_modality(name) for name in topology.action_parameter_names
-    } == {"action"}
+    assert {parameter_modality(name) for name in topology.video_parameter_names} == {
+        "video"
+    }
+    assert {parameter_modality(name) for name in topology.action_parameter_names} == {
+        "action"
+    }
 
 
 def test_parameter_modality_rejects_unclassified_trainable_name() -> None:

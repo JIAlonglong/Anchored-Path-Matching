@@ -14,9 +14,7 @@ from anchorstep.core.schedules import build_time_grid
         (4, [1.0, 0.75, 0.5, 0.25, 0.0]),
     ],
 )
-def test_time_grid_matches_deployment_budget(
-    steps: int, expected: list[float]
-) -> None:
+def test_time_grid_matches_deployment_budget(steps: int, expected: list[float]) -> None:
     assert torch.equal(build_time_grid(steps), torch.tensor(expected))
 
 

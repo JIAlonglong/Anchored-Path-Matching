@@ -6,7 +6,6 @@ import yaml
 
 from anchorstep.config import GuidanceContract, load_config, validate_config
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

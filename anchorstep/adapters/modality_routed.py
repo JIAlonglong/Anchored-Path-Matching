@@ -7,7 +7,6 @@ from typing import Literal
 
 import torch
 from torch import Tensor, nn
-from torch.nn import functional as F
 
 
 @dataclass(frozen=True)

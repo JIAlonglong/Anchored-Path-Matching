@@ -17,7 +17,6 @@ from torch import Generator, Tensor, nn
 
 from anchorstep.interfaces import JointBatch, JointLatent
 
-
 LINGBOT_CODE_REVISION = "58c2ae5bac46bd8114065bea9d7d256eb67c16c3"
 LINGBOT_MODEL_REVISION = "8c9dea8abbc5c91cc9e18bc3264b8915083bbe70"
 
@@ -32,7 +31,9 @@ def verify_checkout_revision(path: Path, expected: str) -> str:
             stderr=subprocess.STDOUT,
         ).strip()
     except (OSError, subprocess.CalledProcessError) as error:
-        raise RuntimeError(f"paths.lingbot_repo is not a readable Git checkout: {checkout}") from error
+        raise RuntimeError(
+            f"paths.lingbot_repo is not a readable Git checkout: {checkout}"
+        ) from error
     if actual != expected:
         raise RuntimeError(
             f"LingBot revision mismatch: expected {expected}, actual {actual}"
@@ -60,7 +61,9 @@ def load_routed_adapter_state(
                 f"routed adapter shape mismatch for {name}: "
                 f"expected {tuple(live[name].shape)}, got {tuple(state[name].shape)}"
             )
-        live[name].data.copy_(state[name].to(device=live[name].device, dtype=live[name].dtype))
+        live[name].data.copy_(
+            state[name].to(device=live[name].device, dtype=live[name].dtype)
+        )
 
 
 class LingBotBackend:
@@ -84,7 +87,7 @@ class LingBotBackend:
         self._runtime = runtime
 
     @classmethod
-    def from_config(cls, config: Mapping[str, Any]) -> "LingBotBackend":
+    def from_config(cls, config: Mapping[str, Any]) -> LingBotBackend:
         paths = config.get("paths")
         if not isinstance(paths, Mapping) or not paths.get("lingbot_repo"):
             raise RuntimeError("LingBot backend requires paths.lingbot_repo")

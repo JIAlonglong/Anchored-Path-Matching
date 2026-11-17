@@ -73,9 +73,7 @@ def pending_episode_ids(
 
 def aggregate_results(records: Iterable[EpisodeRecord]) -> EvaluationSummary:
     """Aggregate per-task and task-macro success separately by domain."""
-    by_domain: dict[str, dict[str, list[bool]]] = defaultdict(
-        lambda: defaultdict(list)
-    )
+    by_domain: dict[str, dict[str, list[bool]]] = defaultdict(lambda: defaultdict(list))
     seen: set[str] = set()
     for record in records:
         if record.episode_id in seen:

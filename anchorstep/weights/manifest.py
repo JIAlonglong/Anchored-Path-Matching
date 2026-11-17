@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Mapping
-
+from typing import Any
 
 INTERNAL_PATH_PREFIX = "/" + "kpfs-intern/"
 
@@ -32,9 +32,7 @@ def validate_release_manifest(
     if not isinstance(artifacts, list):
         raise ValueError("manifest artifacts must be a list")
     exact = {
-        str(item.get("id"))
-        for item in artifacts
-        if item.get("paper_status") == "exact"
+        str(item.get("id")) for item in artifacts if item.get("paper_status") == "exact"
     }
     missing = tuple(role for role in required if role not in exact)
     unverified = tuple(

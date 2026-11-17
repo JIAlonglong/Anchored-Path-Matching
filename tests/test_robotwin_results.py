@@ -18,7 +18,22 @@ def test_robotwin_contract_pins_checkpoint_camera_action_and_window_metadata() -
         "observation.images.cam_right_wrist",
     )
     assert contract.used_action_channel_ids == (
-        0, 1, 2, 3, 4, 5, 6, 28, 7, 8, 9, 10, 11, 12, 13, 29
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        28,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        29,
     )
     assert contract.model_action_dimension == 30
     assert contract.raw_action_dimension == 16

@@ -47,7 +47,9 @@ def _tree(root: Path) -> tuple[Path, str]:
         )
     )
     (checkpoint / "robotwin_contract.json").write_text(
-        json.dumps({"contract": {"version": "fixture"}, "distillation_lora": {"rank": 128}})
+        json.dumps(
+            {"contract": {"version": "fixture"}, "distillation_lora": {"rank": 128}}
+        )
     )
     return checkpoint, hashlib.sha256(b"target-ema").hexdigest()
 
@@ -84,9 +86,7 @@ def test_discovery_fails_on_hash_mismatch_missing_target_and_duplicate_identity(
 ) -> None:
     checkpoint, digest = _tree(tmp_path)
     with pytest.raises(ValueError, match="hash mismatch"):
-        discover_candidate(
-            CandidateSpec("bad", "apm", checkpoint, "0" * 64, {})
-        )
+        discover_candidate(CandidateSpec("bad", "apm", checkpoint, "0" * 64, {}))
     (checkpoint / "target_student.safetensors").unlink()
     with pytest.raises(ValueError, match="target_student"):
         discover_candidate(CandidateSpec("missing", "apm", checkpoint, None, {}))

@@ -14,7 +14,10 @@ def _redact_config(value: Any, key: str = "") -> Any:
     if any(marker in normalized for marker in ("token", "password", "secret")):
         return "<redacted>"
     if isinstance(value, dict):
-        return {str(child_key): _redact_config(child, str(child_key)) for child_key, child in value.items()}
+        return {
+            str(child_key): _redact_config(child, str(child_key))
+            for child_key, child in value.items()
+        }
     if isinstance(value, (list, tuple)):
         return [_redact_config(child, key) for child in value]
     if isinstance(value, str) and value.startswith("/"):
@@ -98,7 +101,10 @@ class ReleaseInventory:
     audits: tuple[PaperRoleAudit, ...]
 
     def to_dict(self) -> dict[str, Any]:
-        return {"schema": "apm.release-inventory.v1", "audits": [item.to_dict() for item in self.audits]}
+        return {
+            "schema": "apm.release-inventory.v1",
+            "audits": [item.to_dict() for item in self.audits],
+        }
 
 
 def load_candidate_specs(path: Path) -> list[CandidateSpec]:

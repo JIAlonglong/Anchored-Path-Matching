@@ -19,9 +19,7 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    bundle = load_checkpoint(
-        args.checkpoint, expected_stage=args.expected_stage
-    )
+    bundle = load_checkpoint(args.checkpoint, expected_stage=args.expected_stage)
     if not args.check_only:
         summary = {
             "stage": bundle.metadata["stage"],

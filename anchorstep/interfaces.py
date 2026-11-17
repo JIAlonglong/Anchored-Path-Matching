@@ -16,7 +16,7 @@ class JointLatent:
     video: Tensor
     action: Tensor
 
-    def detach(self) -> "JointLatent":
+    def detach(self) -> JointLatent:
         return JointLatent(self.video.detach(), self.action.detach())
 
 

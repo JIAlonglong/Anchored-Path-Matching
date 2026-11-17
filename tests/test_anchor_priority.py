@@ -20,9 +20,7 @@ def test_conflicting_field_is_projected_orthogonal_to_anchor() -> None:
 
 def test_compatible_field_is_unchanged() -> None:
     field = [torch.tensor([1.0, 2.0])]
-    corrected, stats = project_conflicting_gradient(
-        [torch.tensor([2.0, 0.0])], field
-    )
+    corrected, stats = project_conflicting_gradient([torch.tensor([2.0, 0.0])], field)
 
     assert torch.equal(corrected[0], field[0])
     assert corrected[0] is not field[0]

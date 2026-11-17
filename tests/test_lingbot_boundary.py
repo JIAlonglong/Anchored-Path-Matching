@@ -18,7 +18,9 @@ from anchorstep.backends.registry import create_backend
 
 def test_importing_anchorstep_does_not_import_lingbot() -> None:
     importlib.import_module("anchorstep")
-    assert not any(name == "wan_va" or name.startswith("wan_va.") for name in sys.modules)
+    assert not any(
+        name == "wan_va" or name.startswith("wan_va.") for name in sys.modules
+    )
 
 
 def test_selecting_lingbot_without_checkout_names_required_config() -> None:

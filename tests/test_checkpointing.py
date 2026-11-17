@@ -41,7 +41,10 @@ def _save(path: Path, *, topology: AdapterTopology | None = None) -> None:
         path,
         online_state=online,
         ema_state=ema,
-        resolved_config={"paths": {"output_dir": "/private/run"}, "train": {"stage": 2}},
+        resolved_config={
+            "paths": {"output_dir": "/private/run"},
+            "train": {"stage": 2},
+        },
         guidance=_guidance(),
         topology=topology or _topology(),
         stage="stage2",
@@ -65,7 +68,9 @@ def test_atomic_checkpoint_round_trip_preserves_contract(tmp_path: Path) -> None
     for name in online:
         assert torch.equal(bundle.online_state[name], online[name])
         assert torch.equal(bundle.ema_state[name], ema[name])
-    assert bundle.metadata["resolved_config"]["paths"]["output_dir"] == "<redacted-path>"
+    assert (
+        bundle.metadata["resolved_config"]["paths"]["output_dir"] == "<redacted-path>"
+    )
     assert bundle.metadata["guidance"]["teacher_video_cfg"] == 5.0
     assert bundle.metadata["stage"] == "stage2"
     assert bundle.metadata["step"] == 25

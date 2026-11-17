@@ -28,9 +28,7 @@ def project_conflicting_gradient(
     """Remove only the field component that conflicts with the anchor."""
     if len(anchor) != len(field):
         raise ValueError("anchor and field gradient sequences must have equal length")
-    reference = next(
-        (value for value in (*anchor, *field) if value is not None), None
-    )
+    reference = next((value for value in (*anchor, *field) if value is not None), None)
     if reference is None:
         return [None] * len(anchor), ProjectionStats(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     zero = reference.new_zeros((), dtype=torch.float32)
@@ -69,9 +67,9 @@ def project_conflicting_gradient(
     post_dot = zero.clone()
     for anchor_gradient, corrected_gradient in zip(anchor, corrected, strict=True):
         if anchor_gradient is not None and corrected_gradient is not None:
-            post_dot = post_dot + (
-                anchor_gradient.float() * corrected_gradient.float()
-            ).sum()
+            post_dot = (
+                post_dot + (anchor_gradient.float() * corrected_gradient.float()).sum()
+            )
     denominator = (anchor_sq * field_sq).sqrt()
     cosine = dot / denominator if denominator.item() > 0.0 else zero
     return corrected, ProjectionStats(

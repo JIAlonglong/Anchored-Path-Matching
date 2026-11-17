@@ -8,8 +8,6 @@ import struct
 from dataclasses import dataclass
 from pathlib import Path
 
-from torch import Tensor
-
 
 @dataclass(frozen=True)
 class TensorEntry:
@@ -113,7 +111,11 @@ def tensor_entries(path_or_index: Path) -> dict[str, TensorEntry]:
 
 
 def entries_equal(left: TensorEntry, right: TensorEntry) -> bool:
-    if (left.dtype, left.shape, left.length) != (right.dtype, right.shape, right.length):
+    if (left.dtype, left.shape, left.length) != (
+        right.dtype,
+        right.shape,
+        right.length,
+    ):
         return False
     left_chunks = left.chunks()
     right_chunks = right.chunks()

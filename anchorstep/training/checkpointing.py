@@ -120,7 +120,9 @@ def load_checkpoint(
         raise ValueError(f"partial checkpoint; missing {missing}")
     metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
     if metadata.get("state_scope") != "adapter":
-        raise ValueError("checkpoint state_scope must be adapter, not nested transformer")
+        raise ValueError(
+            "checkpoint state_scope must be adapter, not nested transformer"
+        )
     if expected_stage is not None and metadata.get("stage") != expected_stage:
         raise ValueError(
             f"expected {expected_stage} checkpoint, found {metadata.get('stage')}"

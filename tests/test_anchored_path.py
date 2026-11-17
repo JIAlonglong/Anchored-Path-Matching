@@ -67,7 +67,9 @@ class RecordingAPMBackend:
         batch: JointBatch,
     ) -> JointLatent:
         del batch
-        self.student_calls.append(StudentCall(state, t.detach().clone(), r.detach().clone()))
+        self.student_calls.append(
+            StudentCall(state, t.detach().clone(), r.detach().clone())
+        )
         weight = next(model.parameters()).reshape(())
         gap = (t - r)[:, None]
         return JointLatent(state.video + gap * weight, state.action - gap * weight)
@@ -76,9 +78,7 @@ class RecordingAPMBackend:
         self, state: JointLatent, time: Tensor, batch: JointBatch
     ) -> JointLatent:
         del batch
-        self.teacher_direction_calls.append(
-            DirectionCall(state, time.detach().clone())
-        )
+        self.teacher_direction_calls.append(DirectionCall(state, time.detach().clone()))
         return JointLatent(
             torch.full_like(state.video, -1.0),
             torch.full_like(state.action, 2.0),
@@ -92,9 +92,7 @@ class RecordingAPMBackend:
         batch: JointBatch,
     ) -> JointLatent:
         del batch
-        self.student_direction_calls.append(
-            DirectionCall(state, time.detach().clone())
-        )
+        self.student_direction_calls.append(DirectionCall(state, time.detach().clone()))
         weight = next(model.parameters()).reshape(())
         return JointLatent(
             torch.zeros_like(state.video) + weight,
@@ -170,10 +168,22 @@ def test_apm_matches_instantaneous_fields_at_restart_anchor_query_state() -> Non
     assert len(backend.student_direction_calls) == 1
     teacher_field_call = backend.teacher_direction_calls[0]
     student_field_call = backend.student_direction_calls[0]
-    assert endpoint_call.state.video.data_ptr() == teacher_field_call.state.video.data_ptr()
-    assert endpoint_call.state.video.data_ptr() == student_field_call.state.video.data_ptr()
-    assert endpoint_call.state.action.data_ptr() == teacher_field_call.state.action.data_ptr()
-    assert endpoint_call.state.action.data_ptr() == student_field_call.state.action.data_ptr()
+    assert (
+        endpoint_call.state.video.data_ptr()
+        == teacher_field_call.state.video.data_ptr()
+    )
+    assert (
+        endpoint_call.state.video.data_ptr()
+        == student_field_call.state.video.data_ptr()
+    )
+    assert (
+        endpoint_call.state.action.data_ptr()
+        == teacher_field_call.state.action.data_ptr()
+    )
+    assert (
+        endpoint_call.state.action.data_ptr()
+        == student_field_call.state.action.data_ptr()
+    )
     assert endpoint_call.r.item() == 0.0
     assert torch.equal(teacher_field_call.time, endpoint_call.t)
     assert torch.equal(student_field_call.time, endpoint_call.t)

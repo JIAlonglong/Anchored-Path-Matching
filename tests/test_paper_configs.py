@@ -7,7 +7,6 @@ import pytest
 
 from anchorstep.config import load_config, validate_config
 
-
 ROOT = Path(__file__).resolve().parents[1]
 INTERNAL_PATH_PREFIX = "/" + "kpfs-intern/"
 MODEL = ROOT / "configs/model/lingbot_robotwin.yaml"
@@ -35,9 +34,7 @@ def _strings(value: Any):
 
 @pytest.mark.parametrize("name", sorted(ABLATIONS))
 def test_paper_ablation_has_unambiguous_semantics_and_cfg(name: str) -> None:
-    config = load_config(
-        [MODEL, STAGE2, ROOT / f"configs/ablation/{name}.yaml"]
-    )
+    config = load_config([MODEL, STAGE2, ROOT / f"configs/ablation/{name}.yaml"])
     validate_config(config, "stage2")
 
     expected_anchor, expected_field, expected_projection = ABLATIONS[name]

@@ -10,13 +10,23 @@ from safetensors.torch import save_file
 from anchorstep.weights.safetensors_io import tensor_entries, tensor_state_digest
 
 
-def test_logical_digest_covers_values_dtype_and_shape(tmp_path: Path, monkeypatch) -> None:
-    paths = {name: tmp_path / f"{name}.safetensors" for name in ("same", "value", "dtype", "shape")}
+def test_logical_digest_covers_values_dtype_and_shape(
+    tmp_path: Path, monkeypatch
+) -> None:
+    paths = {
+        name: tmp_path / f"{name}.safetensors"
+        for name in ("same", "value", "dtype", "shape")
+    }
     save_file({"weight": torch.tensor([1.0, 2.0])}, paths["same"])
     save_file({"weight": torch.tensor([1.0, 3.0])}, paths["value"])
     save_file({"weight": torch.tensor([1.0, 2.0], dtype=torch.float64)}, paths["dtype"])
     save_file({"weight": torch.tensor([[1.0, 2.0]])}, paths["shape"])
-    monkeypatch.setattr("safetensors.torch.load_file", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("full load forbidden")))
+    monkeypatch.setattr(
+        "safetensors.torch.load_file",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("full load forbidden")
+        ),
+    )
 
     digest = tensor_state_digest(paths["same"])
 
@@ -47,13 +57,17 @@ def test_sharded_index_matches_single_file_digest(tmp_path: Path) -> None:
     assert set(tensor_entries(index)) == {"a", "b"}
 
 
-def test_sharded_index_rejects_missing_shard_and_duplicate_physical_key(tmp_path: Path) -> None:
+def test_sharded_index_rejects_missing_shard_and_duplicate_physical_key(
+    tmp_path: Path,
+) -> None:
     shard_a = tmp_path / "a.safetensors"
     shard_b = tmp_path / "b.safetensors"
     save_file({"weight": torch.tensor([1.0])}, shard_a)
     save_file({"weight": torch.tensor([2.0])}, shard_b)
     index = tmp_path / "model.safetensors.index.json"
-    index.write_text(json.dumps({"weight_map": {"weight": shard_a.name, "other": shard_b.name}}))
+    index.write_text(
+        json.dumps({"weight_map": {"weight": shard_a.name, "other": shard_b.name}})
+    )
     with pytest.raises(ValueError, match="duplicate|weight_map"):
         tensor_entries(index)
     shard_b.unlink()

@@ -24,7 +24,7 @@ class GuidanceContract:
     target_guidance_mode: str
 
     @classmethod
-    def from_config(cls, config: Mapping[str, Any]) -> "GuidanceContract":
+    def from_config(cls, config: Mapping[str, Any]) -> GuidanceContract:
         data = _mapping(config, "data")
         teacher = _mapping(config, "teacher_target_cfg")
         deployment = _mapping(config, "deployment_cfg")
@@ -40,7 +40,8 @@ class GuidanceContract:
             )
         except (KeyError, TypeError, ValueError) as error:
             raise ValueError(
-                "formal config requires text dropout and explicit teacher/deployment CFG"
+                "formal config requires text dropout and explicit "
+                "teacher/deployment CFG"
             ) from error
 
 
@@ -61,9 +62,7 @@ def _deep_merge(left: dict[str, Any], right: Mapping[str, Any]) -> dict[str, Any
     return result
 
 
-def load_config(
-    paths: Sequence[Path], overrides: Sequence[str] = ()
-) -> dict[str, Any]:
+def load_config(paths: Sequence[Path], overrides: Sequence[str] = ()) -> dict[str, Any]:
     """Compose YAML mappings in order and apply typed dotted-key overrides."""
     result: dict[str, Any] = {}
     for path in paths:
@@ -96,7 +95,8 @@ def validate_config(
     data = _mapping(config, "data")
     if "cfg_probability" in data and "text_dropout_probability" not in data:
         raise ValueError(
-            "data.cfg_probability is not guidance; set text_dropout_probability explicitly"
+            "data.cfg_probability is not guidance; set "
+            "text_dropout_probability explicitly"
         )
     contract = GuidanceContract.from_config(config)
     if not 0.0 <= contract.text_dropout_probability <= 1.0:
@@ -114,23 +114,27 @@ def validate_config(
         "target_distilled",
     }:
         raise ValueError(
-            "guidance.target_guidance_mode must be inference_composed or target_distilled"
+            "guidance.target_guidance_mode must be inference_composed "
+            "or target_distilled"
         )
     if contract.target_guidance_mode == "target_distilled" and (
-        contract.deployment_video_cfg != 1.0
-        or contract.deployment_action_cfg != 1.0
+        contract.deployment_video_cfg != 1.0 or contract.deployment_action_cfg != 1.0
     ):
         raise ValueError("target_distilled guidance requires deployment CFG 1/1")
 
 
 def redact_config(config: Mapping[str, Any]) -> dict[str, Any]:
     """Return a serializable copy without credentials or absolute host paths."""
+
     def redact(value: Any, key: str = "") -> Any:
         normalized = key.lower()
         if any(marker in normalized for marker in ("token", "password", "secret")):
             return "<redacted>"
         if isinstance(value, Mapping):
-            return {str(child_key): redact(child, str(child_key)) for child_key, child in value.items()}
+            return {
+                str(child_key): redact(child, str(child_key))
+                for child_key, child in value.items()
+            }
         if isinstance(value, list):
             return [redact(child, key) for child in value]
         if isinstance(value, tuple):

@@ -11,9 +11,5 @@ def test_core_imports_do_not_load_optional_runtime_dependencies() -> None:
         importlib.import_module(module.name)
 
     forbidden = ("wan_va", "robotwin", "sapien", "lingbot")
-    loaded = {
-        name
-        for name in sys.modules
-        if name.lower().startswith(forbidden)
-    }
+    loaded = {name for name in sys.modules if name.lower().startswith(forbidden)}
     assert loaded == set()

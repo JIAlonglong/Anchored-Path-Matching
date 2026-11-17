@@ -26,13 +26,19 @@ except ModuleNotFoundError:  # Support the documented direct-script invocation.
     from discover_checkpoints import discover_candidates
 
 
-PAPER_STAGE1_BASE_SHA256 = "0408df97114d4be32f38d59e1be0b57455cd0f1c50c086140347df1fd88ed2bd"
+PAPER_STAGE1_BASE_SHA256 = (
+    "0408df97114d4be32f38d59e1be0b57455cd0f1c50c086140347df1fd88ed2bd"
+)
 
 
 ROLE_EXPECTATIONS: dict[str, dict[str, Any]] = {
     "shared": {"stage": 1, "step": 2000},
     "continued": {"stage": 1, "step": 4000},
-    "original-no-field": {"stage": 2, "anchor_source": "original", "field_enabled": False},
+    "original-no-field": {
+        "stage": 2,
+        "anchor_source": "original",
+        "field_enabled": False,
+    },
     "original-field-projected": {
         "stage": 2,
         "anchor_source": "original",
@@ -40,7 +46,11 @@ ROLE_EXPECTATIONS: dict[str, dict[str, Any]] = {
         "field_target": "instantaneous",
         "projection": True,
     },
-    "restart-no-field": {"stage": 2, "anchor_source": "restart", "field_enabled": False},
+    "restart-no-field": {
+        "stage": 2,
+        "anchor_source": "restart",
+        "field_enabled": False,
+    },
     "restart-field-no-projection": {
         "stage": 2,
         "anchor_source": "restart",
@@ -64,7 +74,9 @@ def _common_reasons(record: CheckpointRecord) -> list[str]:
         return []
     reasons: list[str] = []
     if semantic.data_domains != ("Clean",):
-        reasons.append(f"data_domains expected Clean-only, found {semantic.data_domains}")
+        reasons.append(
+            f"data_domains expected Clean-only, found {semantic.data_domains}"
+        )
     if semantic.text_dropout_probability != 0.1:
         reasons.append(
             "text_dropout_probability expected 0.1, "
@@ -81,7 +93,9 @@ def _common_reasons(record: CheckpointRecord) -> list[str]:
         )
     expected_topology = "frozen-stage1-routed-ffn-time-v1:r64/r64/t128"
     if semantic.topology != expected_topology:
-        reasons.append(f"topology expected {expected_topology}, found {semantic.topology}")
+        reasons.append(
+            f"topology expected {expected_topology}, found {semantic.topology}"
+        )
     return reasons
 
 

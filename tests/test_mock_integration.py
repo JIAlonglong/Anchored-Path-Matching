@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import copy
-from dataclasses import asdict
 from pathlib import Path
 
 import torch
@@ -43,7 +41,10 @@ def test_mock_stage1_checkpoint_stage2_and_multibudget_inference(
 ) -> None:
     backend = MockBackend()
     batch = backend.encode_batch(
-        {"video": torch.tensor([[1.0], [0.5]]), "action": torch.tensor([[0.25], [-0.5]])}
+        {
+            "video": torch.tensor([[1.0], [0.5]]),
+            "action": torch.tensor([[0.25], [-0.5]]),
+        }
     )
     optimizer = torch.optim.SGD(backend.trainable_parameters(), lr=0.05)
     stage1 = stage1_objective(

@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 import torch
-from safetensors import safe_open
 from safetensors.torch import save_file
 
 from anchorstep.weights.export import classify_artifact, export_artifact
@@ -47,7 +46,9 @@ def test_materialization_is_sharded_and_exact(tmp_path: Path) -> None:
     assert len(set(payload["weight_map"].values())) == 3
 
 
-def test_materialization_rejects_wrong_base_and_corrupted_artifact(tmp_path: Path) -> None:
+def test_materialization_rejects_wrong_base_and_corrupted_artifact(
+    tmp_path: Path,
+) -> None:
     base, source, artifact = _setup(tmp_path)
     wrong = tmp_path / "wrong.safetensors"
     save_file({"a": torch.tensor([0.0]), "b": torch.tensor([2.0])}, wrong)

@@ -120,7 +120,9 @@ def export_artifact(
     """Write changed tensors as exact replacement values plus an audit manifest."""
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=False)
-    file_name = "adapter_model.safetensors" if plan.kind == "adapter" else "delta.safetensors"
+    file_name = (
+        "adapter_model.safetensors" if plan.kind == "adapter" else "delta.safetensors"
+    )
     artifact_path = output / file_name
     tensors = _load_selected(plan.variant, plan.changed_keys)
     save_file(tensors, artifact_path)
