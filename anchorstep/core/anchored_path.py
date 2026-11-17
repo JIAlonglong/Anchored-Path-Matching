@@ -41,9 +41,9 @@ def _batch_time(value: Tensor, batch_size: int, reference: Tensor) -> Tensor:
     return value.to(device=reference.device, dtype=reference.dtype).expand(batch_size)
 
 
-def _beta_five_two(generator: torch.Generator, device: torch.device) -> float:
+def _beta_five_two(generator: torch.Generator) -> float:
     """Sample Beta(5,2) through its monotone polynomial CDF."""
-    uniform = float(torch.rand((), generator=generator, device=device))
+    uniform = float(torch.rand((), generator=generator, device=generator.device))
     low, high = 0.0, 1.0
     for _ in range(48):
         midpoint = (low + high) / 2.0
@@ -55,15 +55,31 @@ def _beta_five_two(generator: torch.Generator, device: torch.device) -> float:
     return (low + high) / 2.0
 
 
-def _correction_index(
-    steps: int, generator: torch.Generator, device: torch.device
-) -> int:
+def _correction_index(steps: int, generator: torch.Generator) -> int:
     if steps == 1:
         return 0
     if steps == 2:
         return 1
-    sample = _beta_five_two(generator, device)
+    sample = _beta_five_two(generator)
     return 1 + min(steps - 2, int(sample * (steps - 1)))
+
+
+def _rollout_steps(apm: Mapping[str, Any], generator: torch.Generator) -> int:
+    distribution = apm.get("rollout_step_distribution")
+    if distribution is None:
+        steps = apm.get("rollout_steps")
+        if type(steps) is not int or steps not in {1, 2, 4}:
+            raise ValueError("apm.rollout_steps must be one of {1, 2, 4}")
+        return steps
+    if distribution != "uniform-1-2-4":
+        raise ValueError(
+            "apm.rollout_step_distribution must be 'uniform-1-2-4' when set"
+        )
+    choices = (1, 2, 4)
+    index = int(
+        torch.randint(0, len(choices), (), generator=generator, device=generator.device)
+    )
+    return choices[index]
 
 
 def _mse(prediction: Tensor, target: Tensor, weight: float) -> Tensor:
@@ -92,16 +108,14 @@ def anchored_path_objective(
     apm = _require_mapping(config, "apm")
     loss = _require_mapping(config, "loss")
     train = _require_mapping(config, "train")
-    steps = apm.get("rollout_steps")
-    if type(steps) is not int or steps not in {1, 2, 4}:
-        raise ValueError("apm.rollout_steps must be one of {1, 2, 4}")
+    steps = _rollout_steps(apm, generator)
     if apm.get("field_target", "instantaneous") != "instantaneous":
         raise ValueError("public APM requires an instantaneous field target")
     teacher_steps = int(train.get("teacher_reference_steps", 8))
     if teacher_steps != 8:
         raise ValueError("public APM uses eight teacher continuation steps")
 
-    state_index = _correction_index(steps, generator, batch.clean.video.device)
+    state_index = _correction_index(steps, generator)
     base = stage1_objective(backend, batch, config, generator).total
     prior = backend.sample_prior(batch, generator).detach()
     grid = build_time_grid(steps).to(device=prior.video.device, dtype=prior.video.dtype)

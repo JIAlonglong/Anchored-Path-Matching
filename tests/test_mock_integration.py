@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import torch
 
 from anchorstep.backends.mock import MockBackend
@@ -92,3 +93,27 @@ def test_mock_stage1_checkpoint_stage2_and_multibudget_inference(
         rollout_student(resumed, prior, batch, steps)
         assert resumed.student_call_count == steps
         assert resumed.teacher_call_count == 0
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_trainer_default_generator_uses_cuda_batch_device() -> None:
+    backend = MockBackend()
+    backend.student_module.cuda()
+    backend.target_student_module.cuda()
+    trainer = Trainer(
+        backend=backend,
+        optimizer=torch.optim.SGD(backend.trainable_parameters(), lr=0.01),
+        config=_config(),
+    )
+
+    trainer.train_accumulated_step(
+        [
+            {
+                "video": torch.tensor([[1.0]], device="cuda"),
+                "action": torch.tensor([[0.25]], device="cuda"),
+            }
+        ]
+    )
+
+    assert trainer.generator is not None
+    assert trainer.generator.device.type == "cuda"

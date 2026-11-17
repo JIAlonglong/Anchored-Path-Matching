@@ -78,8 +78,7 @@ def validate_staging_tree(root: Path) -> ReleaseManifestReport:
             text = path.read_text(encoding="utf-8", errors="replace")
             if INTERNAL_PATH_PREFIX in text or "<redacted-path>" in text:
                 raise ValueError(
-                    "staging tree contains an internal/private path: "
-                    f"{path.name}"
+                    f"staging tree contains an internal/private path: {path.name}"
                 )
 
     declared_paths = {

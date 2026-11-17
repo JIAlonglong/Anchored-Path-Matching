@@ -21,10 +21,11 @@ def sample_two_times(
     """Sample per-example finite intervals with ``1 >= t > r >= 0``."""
     if type(batch_size) is not int or batch_size <= 0:
         raise ValueError("batch_size must be a positive integer")
-    t = torch.rand(batch_size, device=device, generator=generator)
+    random_device = generator.device
+    t = torch.rand(batch_size, device=random_device, generator=generator).to(device)
     epsilon = torch.finfo(t.dtype).eps
     t = t * (1.0 - epsilon) + epsilon
-    r = torch.rand(batch_size, device=device, generator=generator) * t
+    r = torch.rand(batch_size, device=random_device, generator=generator).to(device) * t
     return t, r
 
 

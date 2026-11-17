@@ -46,6 +46,7 @@ def test_paper_ablation_has_unambiguous_semantics_and_cfg(name: str) -> None:
         assert config["apm"]["field_target"] == "instantaneous"
     assert config["ablation"]["anchor_priority_projection"] is expected_projection
     assert config["deployment"]["budgets"] == [1, 2, 4]
+    assert config["apm"]["rollout_step_distribution"] == "uniform-1-2-4"
     assert config["teacher_target_cfg"] == {"video": 5.0, "action": 1.0}
     assert config["deployment_cfg"] == {"video": 5.0, "action": 1.0}
     assert config["data"]["text_dropout_probability"] == 0.1

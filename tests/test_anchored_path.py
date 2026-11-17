@@ -193,3 +193,88 @@ def test_apm_matches_instantaneous_fields_at_restart_anchor_query_state() -> Non
     assert output.anchor_action.requires_grad
     assert output.field_video.requires_grad
     assert output.field_action.requires_grad
+
+
+def test_apm_uniformly_samples_all_documented_rollout_budgets() -> None:
+    config = _config(4)
+    config["apm"]["rollout_step_distribution"] = "uniform-1-2-4"
+
+    selected = {
+        int(
+            anchored_path_objective(
+                RecordingAPMBackend(),
+                _batch(),
+                config,
+                torch.Generator().manual_seed(seed),
+            )
+            .metrics["apm/rollout_steps"]
+            .item()
+        )
+        for seed in range(32)
+    }
+
+    assert selected == {1, 2, 4}
+
+
+def test_apm_rollout_budget_sampling_is_seed_deterministic() -> None:
+    config = _config(4)
+    config["apm"]["rollout_step_distribution"] = "uniform-1-2-4"
+
+    first = anchored_path_objective(
+        RecordingAPMBackend(),
+        _batch(),
+        config,
+        torch.Generator().manual_seed(17),
+    )
+    second = anchored_path_objective(
+        RecordingAPMBackend(),
+        _batch(),
+        config,
+        torch.Generator().manual_seed(17),
+    )
+
+    assert (
+        first.metrics["apm/rollout_steps"].item()
+        == second.metrics["apm/rollout_steps"].item()
+    )
+    assert (
+        first.metrics["apm/state_index"].item()
+        == second.metrics["apm/state_index"].item()
+    )
+
+
+def test_apm_rejects_unknown_rollout_distribution() -> None:
+    config = _config(4)
+    config["apm"]["rollout_step_distribution"] = "not-a-paper-distribution"
+
+    with pytest.raises(ValueError, match="rollout_step_distribution"):
+        anchored_path_objective(
+            RecordingAPMBackend(),
+            _batch(),
+            config,
+            torch.Generator().manual_seed(0),
+        )
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_apm_accepts_cpu_generator_for_cuda_objective() -> None:
+    backend = RecordingAPMBackend()
+    backend.student_module.cuda()
+    batch = _batch()
+    batch = JointBatch(
+        clean=JointLatent(batch.clean.video.cuda(), batch.clean.action.cuda()),
+        conditioning=batch.conditioning,
+        metadata=batch.metadata,
+    )
+    config = _config(4)
+    config["apm"]["rollout_step_distribution"] = "uniform-1-2-4"
+
+    output = anchored_path_objective(
+        backend,
+        batch,
+        config,
+        torch.Generator(device="cpu").manual_seed(0),
+    )
+
+    assert output.metrics["apm/rollout_steps"].item() == 4.0
+    assert output.total.device.type == "cuda"

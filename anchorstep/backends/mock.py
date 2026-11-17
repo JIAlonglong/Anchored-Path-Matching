@@ -63,19 +63,20 @@ class MockBackend:
     def sample_prior(
         self, batch: JointBatch, generator: torch.Generator
     ) -> JointLatent:
+        random_device = generator.device
         return JointLatent(
             torch.randn(
                 batch.clean.video.shape,
                 generator=generator,
-                device=batch.clean.video.device,
+                device=random_device,
                 dtype=batch.clean.video.dtype,
-            ),
+            ).to(batch.clean.video.device),
             torch.randn(
                 batch.clean.action.shape,
                 generator=generator,
-                device=batch.clean.action.device,
+                device=random_device,
                 dtype=batch.clean.action.dtype,
-            ),
+            ).to(batch.clean.action.device),
         )
 
     def teacher_continuation(

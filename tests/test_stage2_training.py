@@ -9,6 +9,7 @@ import torch
 from torch import Tensor, nn
 
 from anchorstep.core.anchored_path import APMObjectiveOutput
+from anchorstep.core.losses import LossOutput
 from anchorstep.training.trainer import Trainer
 
 
@@ -125,3 +126,91 @@ def test_stage2_projects_after_global_average_and_updates_only_adapters() -> Non
         backend.target_student_module.action_ffn.adapter_up.weight,
         backend.student_module.action_ffn.adapter_up.weight,
     )
+
+
+def test_stage2_can_disable_anchor_priority_projection() -> None:
+    backend = TinyBackend()
+    reducer = RecordingReducer()
+    optimizer = torch.optim.SGD(
+        [
+            parameter
+            for parameter in backend.student_module.parameters()
+            if parameter.requires_grad
+        ],
+        lr=0.1,
+    )
+    trainer = Trainer(
+        backend=backend,
+        optimizer=optimizer,
+        config={
+            "apm": {"anchor_priority_projection": False},
+            "train": {"ema_decay": 0.0, "gradient_clip_norm": 100.0},
+        },
+        objective=separated_objective,
+        gradient_reducer=reducer,
+        generator=torch.Generator().manual_seed(0),
+    )
+
+    metrics = trainer.train_accumulated_step([{"sample": 1}])
+
+    # video: base + anchor + conflicting field = 1 + 1 - 1
+    assert backend.student_module.video_ffn.adapter_up.weight.item() == pytest.approx(
+        0.9
+    )
+    assert metrics["gradient/video/conflict"] == 1.0
+    assert metrics["gradient/video/removed_norm"] == 0.0
+    assert metrics["gradient/video/projection_enabled"] == 0.0
+
+
+def test_continued_ablation_routes_to_stage1_without_anchor_or_field(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    backend = TinyBackend()
+    optimizer = torch.optim.SGD(
+        [
+            parameter
+            for parameter in backend.student_module.parameters()
+            if parameter.requires_grad
+        ],
+        lr=0.1,
+    )
+    calls: list[str] = []
+
+    def fake_stage1_objective(
+        backend: TinyBackend,
+        batch: Mapping[str, Any],
+        config: Mapping[str, Any],
+        generator: torch.Generator,
+    ) -> LossOutput:
+        del batch, config, generator
+        calls.append("stage1")
+        video = backend.student_module.video_ffn.adapter_up.weight.reshape(())
+        action = backend.student_module.action_ffn.adapter_up.weight.reshape(())
+        total = video + action
+        return LossOutput(total=total, terms={}, metrics={"continued": total.detach()})
+
+    monkeypatch.setattr(
+        "anchorstep.training.trainer.stage1_objective", fake_stage1_objective
+    )
+    trainer = Trainer(
+        backend=backend,
+        optimizer=optimizer,
+        config={
+            "ablation": {"objective": "continued-stage1"},
+            "train": {"ema_decay": 0.0, "gradient_clip_norm": 100.0},
+        },
+        generator=torch.Generator().manual_seed(0),
+    )
+
+    metrics = trainer.train_accumulated_step([{"sample": 1}])
+
+    assert calls == ["stage1"]
+    assert backend.student_module.video_ffn.adapter_up.weight.item() == pytest.approx(
+        0.9
+    )
+    assert backend.student_module.action_ffn.adapter_up.weight.item() == pytest.approx(
+        0.9
+    )
+    assert metrics["continued"] == pytest.approx(2.0)
+    assert metrics["gradient/video/anchor_norm"] == 0.0
+    assert metrics["gradient/video/field_norm"] == 0.0
