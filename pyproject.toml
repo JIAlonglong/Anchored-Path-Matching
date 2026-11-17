@@ -21,6 +21,8 @@ dependencies = [
 apm-train = "anchorstep.cli.train:main"
 apm-eval = "anchorstep.cli.evaluate:main"
 apm-verify-checkpoint = "anchorstep.cli.verify_checkpoint:main"
+apm-export-weights = "anchorstep.cli.export_weights:main"
+apm-materialize-weights = "anchorstep.cli.materialize_weights:main"
 
 [project.optional-dependencies]
 dev = ["build>=1.2", "pytest>=8", "ruff>=0.6"]
