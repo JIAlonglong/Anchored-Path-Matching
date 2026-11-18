@@ -75,15 +75,6 @@ Both losses supervise video and action predictions. The base objective remains
 active, while the detached rollout prefix and teacher targets receive no
 gradient.
 
-> **Implementation status.** The paper formulation above uses the first
-> intermediate teacher state as a finite-interval target. The current public
-> Stage II implementation and ablation configs remain on the earlier
-> **instantaneous-field** formulation and do not yet implement that paper
-> target or its original-grid continuation schedule. Consequently, the
-> training entry points below exercise the released instantaneous-field code;
-> they are not yet an exact reproduction of the finite-interval Stage II
-> formulation in the linked PDF.
-
 ### Anchor-priority correction
 
 Let `gbase`, `ga`, and `gf` be the base, weighted endpoint-anchor, and weighted
