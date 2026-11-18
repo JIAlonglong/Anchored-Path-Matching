@@ -18,9 +18,9 @@ def test_readme_paper_release_contract() -> None:
         "[![Project Page](https://img.shields.io/badge/Project-Page-2F80ED?"
         "style=flat&logo=googlechrome&logoColor=white)](https://jialonglong.github.io/"
         "Anchored-Path-Matching/)",
-        "[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?"
-        "style=flat&logo=googlescholar&logoColor=white)](https://jialonglong.github.io/"
-        "Anchored-Path-Matching/paper.pdf)",
+        "[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?"
+        "style=flat&logo=arxiv&logoColor=white)](https://"
+        "arxiv.org/abs/2611.22592)",
         "[![Code](https://img.shields.io/badge/Code-GitHub-181717?"
         "style=flat&logo=github&logoColor=white)](https://github.com/JIAlonglong/"
         "Anchored-Path-Matching)",
@@ -33,7 +33,7 @@ def test_readme_paper_release_contract() -> None:
 
     for url in (
         "https://jialonglong.github.io/Anchored-Path-Matching/",
-        "https://jialonglong.github.io/Anchored-Path-Matching/paper.pdf",
+        "https://arxiv.org/abs/2611.22592",
         "https://github.com/JIAlonglong/Anchored-Path-Matching",
         "https://huggingface.co/JIAlonglong/Anchored-Path-Matching",
     ):

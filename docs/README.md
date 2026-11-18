@@ -14,7 +14,7 @@ npm ci
 npm run dev
 ```
 
-The local URL includes `/Anchored-Path-Matching/`. Content is in `src/paper.mdx`; author affiliations and resource links are in `src/pages/index.astro`. Figures are in `public/images/`, and `public/paper.pdf` is the named preprint version.
+The local URL includes `/Anchored-Path-Matching/`. Content is in `src/paper.mdx`; author affiliations and resource links are in `src/pages/index.astro`. Figures are in `public/images/`, and the Paper button links to the arXiv record at https://arxiv.org/abs/2611.22592.
 
 ```sh
 npm run build

@@ -7,7 +7,7 @@
 **One checkpoint · 1/2/4-step joint video–action generation · teacher-free deployment**
 
 [![Project Page](https://img.shields.io/badge/Project-Page-2F80ED?style=flat&logo=googlechrome&logoColor=white)](https://jialonglong.github.io/Anchored-Path-Matching/)
-[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?style=flat&logo=googlescholar&logoColor=white)](https://jialonglong.github.io/Anchored-Path-Matching/paper.pdf)
+[![Paper](https://img.shields.io/badge/Paper-arXiv-B31B1B?style=flat&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2611.22592)
 [![Code](https://img.shields.io/badge/Code-GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/JIAlonglong/Anchored-Path-Matching)
 [![Models](https://img.shields.io/badge/Models-Hugging_Face-FFD21E?style=flat&logo=huggingface&logoColor=000000)](https://huggingface.co/JIAlonglong/Anchored-Path-Matching)
 
@@ -245,3 +245,18 @@ terms.
 This repository is research code, not a production robot safety controller.
 Physical deployment requires independent validation of action bounds,
 collision handling, emergency stops, and task-specific safety constraints.
+
+## Citation
+
+```bibtex
+@misc{liu2026anchoredpathmatching,
+  title = {Distilling World Action Models for Efficient Bimanual Manipulation via Anchored Path Matching},
+  author = {Jialong Liu and Junjie He and Yandu Chen and Bin Zhou and Heng Su and Peijun Tang and Jianan Wang and Changhao Chen},
+  year = {2026},
+  eprint = {2611.22592},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CV},
+  doi = {10.48550/arXiv.2611.22592},
+  url = {https://arxiv.org/abs/2611.22592}
+}
+```
