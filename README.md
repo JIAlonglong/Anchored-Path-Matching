@@ -75,20 +75,30 @@ Both losses supervise video and action predictions. The base objective remains
 active, while the detached rollout prefix and teacher targets receive no
 gradient.
 
+> **Implementation status.** The paper formulation above uses the first
+> intermediate teacher state as a finite-interval target. The current public
+> Stage II implementation and ablation configs remain on the earlier
+> **instantaneous-field** formulation and do not yet implement that paper
+> target or its original-grid continuation schedule. Consequently, the
+> training entry points below exercise the released instantaneous-field code;
+> they are not yet an exact reproduction of the finite-interval Stage II
+> formulation in the linked PDF.
+
 ### Anchor-priority correction
 
-Let `gbase`, `ga`, and `gf` be the base, endpoint-anchor, and local-field
-gradients. Within each modality parameter group, APM removes only the component
-of `gf` that opposes `ga`:
+Let `gbase`, `ga`, and `gf` be the base, weighted endpoint-anchor, and weighted
+local-field gradients (including their loss coefficients). Within each
+modality parameter group, APM removes only the component of `gf` that opposes
+`ga`:
 
 ```text
 gf⊥    = gf - min(<gf, ga>, 0) / ||ga||² · ga
 gtotal = gbase + ga + gf⊥
 ```
 
-The anchor gradient is never altered. Projection happens after gradient
-accumulation and distributed averaging, and before clipping and the optimizer
-step.
+If `||ga|| = 0`, APM uses `gf⊥ = gf` without projection. The anchor gradient is
+never altered. Projection happens after gradient accumulation and distributed
+averaging, and before clipping and the optimizer step.
 
 ## Results
 
@@ -106,6 +116,8 @@ settings, and total training budget as APM.
 | 2/2 | 89.6% | **87.7%** | 88.6% | **90.4%** | 87.1% | **88.8%** | **+0.1 pp** |
 | 4/4 | 90.5% | 89.1% | 89.8% | **92.5%** | **90.3%** | **91.4%** | **+1.6 pp** |
 
+Average deltas are computed before rounding, following the paper.
+
 The same APM checkpoint produces every row. At one step, APM improves over
 Continued by 2.0 percentage points on Clean and 1.4 points on Random; at four
 steps, the gains are 2.0 and 1.2 points.
@@ -121,8 +133,8 @@ SSIM by `22.6 × 10⁻³`, and reduces LPIPS by **29.0%** relative to Continued.
 ### Astribot S1 deployment
 
 Without task-specific retraining, single-step APM substantially recovers task
-success relative to a one-step coarse teacher while retaining low latency. Each
-cell reports 24 physical trials per task.
+success relative to a one-step coarse teacher while retaining low latency.
+Success rates use 24 physical trials per method per task.
 
 | Method | Video/action steps | PenHolder | FoldTowel | Control-cycle latency |
 |---|---:|---:|---:|---:|
@@ -138,7 +150,7 @@ APM reduces latency by **21.3×** relative to the eight-step teacher.
 
 | Path | Purpose |
 |---|---|
-| [`anchorstep/core/`](anchorstep/core/) | Stage I flow-map and Stage II APM objectives |
+| [`anchorstep/core/`](anchorstep/core/) | Stage I flow map and the current instantaneous-field Stage II objectives |
 | [`anchorstep/training/`](anchorstep/training/) | Gradient routing, projection, EMA, and checkpoints |
 | [`anchorstep/backends/`](anchorstep/backends/) | Public backend contract plus LingBot/mock integrations |
 | [`anchorstep/robotwin/`](anchorstep/robotwin/) | Multi-budget inference and RoboTwin evaluation |
@@ -172,7 +184,7 @@ memory, loading model weights, or importing RoboTwin:
 python -m anchorstep.cli.train --config configs/model/lingbot_robotwin.yaml --config configs/train/stage2.yaml --config configs/ablation/apm.yaml --check-only
 ```
 
-### Training
+### Current training entry points
 
 ```bash
 # Stage I: 4,000 optimization steps
@@ -182,10 +194,11 @@ bash scripts/train_stage1.sh --config /path/to/private-local.yaml
 bash scripts/train_stage2.sh --config /path/to/private-local.yaml
 ```
 
-The paper configuration uses batch size 32, FFN LoRA rank 64, temporal LoRA
-rank 128, eight teacher integration steps, and uniformly sampled Stage II
-budgets `{1, 2, 4}`. See [`docs/training.md`](docs/training.md) for the complete
-protocol.
+These commands run the current instantaneous-field implementation described in
+[`docs/training.md`](docs/training.md), not the finite-interval paper target
+described above. The paper configuration uses batch size 32, FFN LoRA rank 64,
+temporal LoRA rank 128, eight teacher integration steps, and uniformly sampled
+Stage II budgets `{1, 2, 4}`.
 
 ### Inference and evaluation
 
