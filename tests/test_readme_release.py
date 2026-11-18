@@ -19,7 +19,7 @@ def test_readme_paper_release_contract() -> None:
         "style=flat&logo=googlechrome&logoColor=white)](https://jialonglong.github.io/"
         "Anchored-Path-Matching/)",
         "[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?"
-        "style=flat&logo=adobeacrobatreader&logoColor=white)](https://jialonglong.github.io/"
+        "style=flat&logo=googlescholar&logoColor=white)](https://jialonglong.github.io/"
         "Anchored-Path-Matching/paper.pdf)",
         "[![Code](https://img.shields.io/badge/Code-GitHub-181717?"
         "style=flat&logo=github&logoColor=white)](https://github.com/JIAlonglong/"
