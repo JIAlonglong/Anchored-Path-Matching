@@ -12,6 +12,24 @@ def test_readme_paper_release_contract() -> None:
     text = README.read_text(encoding="utf-8")
     lowered = text.lower()
     prose = re.sub(r"\n>\s*", " ", lowered)
+    hero = text.split("</div>", maxsplit=1)[0]
+
+    badge_links = (
+        "[![Project Page](https://img.shields.io/badge/Project-Page-2F80ED?"
+        "style=flat&logo=googlechrome&logoColor=white)](https://jialonglong.github.io/"
+        "Anchored-Path-Matching/)",
+        "[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?"
+        "style=flat&logo=adobeacrobatreader&logoColor=white)](https://jialonglong.github.io/"
+        "Anchored-Path-Matching/paper.pdf)",
+        "[![Code](https://img.shields.io/badge/Code-GitHub-181717?"
+        "style=flat&logo=github&logoColor=white)](https://github.com/JIAlonglong/"
+        "Anchored-Path-Matching)",
+        "[![Models](https://img.shields.io/badge/Models-Hugging_Face-FFD21E?"
+        "style=flat&logo=huggingface&logoColor=000000)](https://huggingface.co/"
+        "JIAlonglong/Anchored-Path-Matching)",
+    )
+    assert all(link in hero for link in badge_links)
+    assert hero.count("https://img.shields.io/badge/") == 4
 
     for url in (
         "https://jialonglong.github.io/Anchored-Path-Matching/",

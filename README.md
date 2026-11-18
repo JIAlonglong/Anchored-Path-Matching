@@ -6,10 +6,10 @@
 
 **One checkpoint · 1/2/4-step joint video–action generation · teacher-free deployment**
 
-[Project Page](https://jialonglong.github.io/Anchored-Path-Matching/) ·
-[Paper](https://jialonglong.github.io/Anchored-Path-Matching/paper.pdf) ·
-[Code](https://github.com/JIAlonglong/Anchored-Path-Matching) ·
-[Models](https://huggingface.co/JIAlonglong/Anchored-Path-Matching)
+[![Project Page](https://img.shields.io/badge/Project-Page-2F80ED?style=flat&logo=googlechrome&logoColor=white)](https://jialonglong.github.io/Anchored-Path-Matching/)
+[![Paper](https://img.shields.io/badge/Paper-PDF-B31B1B?style=flat&logo=adobeacrobatreader&logoColor=white)](https://jialonglong.github.io/Anchored-Path-Matching/paper.pdf)
+[![Code](https://img.shields.io/badge/Code-GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/JIAlonglong/Anchored-Path-Matching)
+[![Models](https://img.shields.io/badge/Models-Hugging_Face-FFD21E?style=flat&logo=huggingface&logoColor=000000)](https://huggingface.co/JIAlonglong/Anchored-Path-Matching)
 
 </div>
 
